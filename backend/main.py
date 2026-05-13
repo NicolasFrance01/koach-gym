@@ -10,6 +10,7 @@ from cv_engine import CVEngine
 
 import admin_routes
 import user_routes
+import totem_routes
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -35,6 +36,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(admin_routes.router)
 app.include_router(user_routes.router)
+app.include_router(totem_routes.router)
 
 @app.get("/")
 def read_root():
