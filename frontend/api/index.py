@@ -12,6 +12,7 @@ from .database import engine, get_db
 from .cv_engine import CVEngine
 from . import admin_routes
 from . import user_routes
+from . import totem_routes
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -37,6 +38,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(admin_routes.router)
 app.include_router(user_routes.router)
+app.include_router(totem_routes.router)
 
 # Middleware to handle /api prefix on Vercel
 @app.middleware("http")
