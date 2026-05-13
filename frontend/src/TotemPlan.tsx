@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import {
   Sun, Moon, LogOut, Plus, Minus, Save, Dumbbell, TrendingUp,
-  CheckCircle, AlertCircle, Clock, X, ChevronDown, ChevronUp, Delete,
+  CheckCircle, AlertCircle, Clock, X, ChevronDown, ChevronUp,
 } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -609,7 +609,7 @@ export default function TotemPlan() {
                                   borderRadius: 12,
                                   fontSize: 12,
                                 }}
-                                formatter={(v: number) => [`${v} kg`]}
+                                formatter={(v) => [`${v ?? 0} kg`]}
                                 labelFormatter={d => new Date(d).toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' })}
                               />
                               <Legend wrapperStyle={{ fontSize: 11 }} />
