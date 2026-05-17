@@ -915,7 +915,7 @@ function FinanceModule({ data, members, startDate, setStartDate, endDate, setEnd
     });
 
   const totalFilteredRevenue = filteredHistory.reduce((acc:number, curr:any) => acc + curr.amount, 0);
-  const totalFilteredExpenses = totalFilteredRevenue * 0.3; // estimated expenses based on revenue
+
   const activeMembers = data.active_members || 1;
   const arpu = activeMembers > 0 ? (totalFilteredRevenue / activeMembers) : 0;
 
