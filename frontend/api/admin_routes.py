@@ -53,6 +53,7 @@ def get_all_members(db: Session = Depends(get_db)):
         m_schema = schemas.MemberSchema.from_orm(m)
         m_schema.billing_history = [
             {
+                "id": p.id,
                 "date": p.created_at.strftime("%Y-%m-%d"),
                 "amount": p.amount,
                 "plan": m.membership_type or "Musculación",
@@ -111,6 +112,15 @@ def record_payment(member_id: int, amount: float, method: str = "card", processe
         member.status = "ACTIVO"
     db.commit()
     return {"status": "payment recorded"}
+
+@router.delete("/payments/{payment_id}")
+def delete_payment(payment_id: int, db: Session = Depends(get_db)):
+    payment = db.query(models.Payment).filter(models.Payment.id == payment_id).first()
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment not found")
+    db.delete(payment)
+    db.commit()
+    return {"status": "deleted"}
 
 @router.get("/pricing/dynamic")
 def calculate_dynamic_price(db: Session = Depends(get_db)):

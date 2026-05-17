@@ -437,7 +437,7 @@ export default function AdminDashboard() {
       }} />;
       case 'Staff': return (userRole === 'gerente' || userRole === 'administracion') ? <StaffModule staff={staff} onEdit={(s: any) => { setSelectedItem({...s}); setIsEditMode(true); setModalType('staff'); setIsModalOpen(true); }} onDelete={async (id: any) => { if(confirm("¿Eliminar empleado?")){ const res = await fetch(`${API_URL}/admin/staff/${id}`, {method:'DELETE'}); if(res.ok) refreshData(); } }} onAddClick={() => { setSelectedItem({name:'', role:'Entrenador', shift:'Mañana', password:'1234'}); setIsEditMode(false); setModalType('staff'); setIsModalOpen(true); }} /> : <NoAccess />;
       case 'Finanzas': return userRole === 'gerente' ? <FinanceModule data={financeData} members={members} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} filterType={filterType} setFilterType={setFilterType} /> : <NoAccess />;
-      case 'Facturación': return (userRole === 'gerente' || userRole === 'administracion') ? <BillingModule members={members} /> : <NoAccess />;
+      case 'Facturación': return (userRole === 'gerente' || userRole === 'administracion') ? <BillingModule members={members} onDeletePayment={async (id: number) => { if (!confirm('¿Eliminar este cobro?')) return; const res = await fetch(`${API_URL}/admin/payments/${id}`, { method: 'DELETE' }); if (res.ok) refreshData(); else alert('Error al eliminar'); }} /> : <NoAccess />;
       default: return (
         <div className="space-y-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -695,7 +695,7 @@ function PaymentBtn({ active, onClick, label, icon }: any) {
   );
 }
 
-function BillingModule({ members }: any) {
+function BillingModule({ members, onDeletePayment }: any) {
   const [filterType, setFilterType] = useState<'dia' | 'semana' | 'mes' | 'rango'>('mes');
   const [startDate, setStartDate] = useState(() => { const d = new Date(); d.setMonth(d.getMonth() - 1); return d.toISOString().split('T')[0]; });
   const [endDate, setEndDate] = useState(() => new Date().toISOString().split('T')[0]);
@@ -763,16 +763,19 @@ function BillingModule({ members }: any) {
        </div>
        <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 rounded-3xl overflow-x-auto shadow-2xl">
           <table className="w-full text-left min-w-full table-fixed">
-             <thead className="bg-white dark:bg-white/5 border-b border-gray-200 dark:border-white/5 text-[8px] text-gray-500 dark:text-white/20 font-black uppercase tracking-widest"><tr><th className="p-4 w-1/5">Socio</th><th className="p-4 w-1/6">Fecha</th><th className="p-4 w-1/5">Plan</th><th className="p-4 w-1/6">Método</th><th className="p-4 w-1/5">Cobró</th><th className="p-4 text-right w-1/6">Monto</th></tr></thead>
+             <thead className="bg-white dark:bg-white/5 border-b border-gray-200 dark:border-white/5 text-[8px] text-gray-500 dark:text-white/20 font-black uppercase tracking-widest"><tr><th className="p-4">Socio</th><th className="p-4">Fecha</th><th className="p-4">Plan</th><th className="p-4">Método</th><th className="p-4">Cobró</th><th className="p-4 text-right">Monto</th><th className="p-4 w-10"></th></tr></thead>
              <tbody className="divide-y divide-white/5">
                 {sorted.length > 0 ? sorted.map((h:any, i:number)=>(
-                  <tr key={i} className="hover:bg-white dark:bg-white/5 transition-colors">
-                     <td className="p-4 font-black uppercase text-black dark:text-white truncate">{h.userName}</td>
-                     <td className="p-4 text-gray-600 dark:text-white/40 text-[9px]">{h.date}</td>
-                     <td className="p-4 text-gray-600 dark:text-white/40 text-[9px] truncate">{h.plan}</td>
+                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+                     <td className="p-4 font-black uppercase text-black dark:text-white truncate max-w-[120px]">{h.userName}</td>
+                     <td className="p-4 text-gray-600 dark:text-white/40 text-[9px] whitespace-nowrap">{h.date}</td>
+                     <td className="p-4 text-gray-600 dark:text-white/40 text-[9px] truncate max-w-[100px]">{h.plan}</td>
                      <td className="p-4"><span className="px-2 py-1 bg-white dark:bg-white/5 rounded-lg text-[7px] font-black uppercase">{h.method}</span></td>
-                     <td className="p-4 text-[9px] font-black text-orange-400 truncate">{h.processed_by || '—'}</td>
-                     <td className="p-4 text-right font-black text-green-500">${h.amount.toLocaleString()}</td>
+                     <td className="p-4 text-[9px] font-black text-orange-400 truncate max-w-[100px]">{h.processed_by || '—'}</td>
+                     <td className="p-4 text-right font-black text-green-500 whitespace-nowrap">${h.amount.toLocaleString()}</td>
+                     <td className="p-4 text-center">
+                       {h.id && <button onClick={() => onDeletePayment(h.id)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-red-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg"><Trash2 size={12}/></button>}
+                     </td>
                   </tr>
                 )) : <tr><td colSpan={5} className="p-8 text-center text-xs text-gray-500 dark:text-white/40 uppercase font-black tracking-widest">No hay facturas en este periodo</td></tr>}
              </tbody>
