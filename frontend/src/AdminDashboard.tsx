@@ -424,7 +424,16 @@ export default function AdminDashboard() {
     switch (activeTab) {
       case 'Socios': return <MembersModule members={members} searchQuery={searchQuery} setSearchQuery={setSearchQuery} onHistory={(m:any)=>{setSelectedItem(m); setModalType('history'); setIsModalOpen(true);}} onEdit={(m: any) => { setSelectedItem(m); setIsEditMode(true); setModalType('member'); setIsModalOpen(true); }} onDelete={async (id: any) => { if(confirm("¿Dar de baja socio?")){ const res = await fetch(`${API_URL}/admin/members/${id}`, {method:'DELETE'}); if(res.ok) refreshData(); } }} onAddClick={() => { setSelectedItem({name:'', dni:'', phone:'', email:'', password:'1234', status:'ACTIVO', membership_type: plans[0]?.name || ''}); setIsEditMode(false); setModalType('member'); setIsModalOpen(true); }} onPayClick={(m: any) => { setSelectedItem(m); setIsPaymentModalOpen(true); }} />;
       case 'Planes': return <PlansModule plans={plans} onEdit={(p:any)=>{setSelectedItem(p); setIsEditMode(true); setModalType('plan'); setIsModalOpen(true);}} onDelete={(id:any)=>setPlans(p=>p.filter(x=>x.id!==id))} onAddClick={()=>{setSelectedItem({name:'', price:0, daysPerWeek:3, classes:[]}); setIsEditMode(false); setModalType('plan'); setIsModalOpen(true);}} />;
-      case 'Mi Perfil': return <ProfileModule user={loggedUser} onSave={async (newPassword: string) => { if(!newPassword)return; try{ const res=await fetch(`${API_URL}/admin/staff/${loggedUser.id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...loggedUser, password: newPassword})}); if(res.ok){ alert('Contraseña actualizada'); setLoggedUser({...loggedUser, password: newPassword}); } }catch(e){console.error(e);} }} />;
+      case 'Mi Perfil': return <ProfileModule user={loggedUser} onSave={async (newPassword: string) => {
+        if (!newPassword) { alert('Ingresá una nueva contraseña'); return; }
+        if (loggedUser.id === 0) { alert('La cuenta master no se puede modificar desde aquí'); return; }
+        try {
+          const payload = { name: loggedUser.name, username: loggedUser.username || loggedUser.name, role: loggedUser.role, shift: loggedUser.shift || 'Mañana', password: newPassword };
+          const res = await fetch(`${API_URL}/admin/staff/${loggedUser.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          if (res.ok) { alert('Contraseña actualizada correctamente'); setLoggedUser({ ...loggedUser, password: newPassword }); }
+          else { const err = await res.json().catch(() => ({})); alert(`Error al actualizar: ${err.detail || res.status}`); }
+        } catch(e) { alert('Error de conexión al guardar la contraseña'); }
+      }} />;
       case 'Staff': return (userRole === 'gerente' || userRole === 'administracion') ? <StaffModule staff={staff} onEdit={(s: any) => { setSelectedItem({...s}); setIsEditMode(true); setModalType('staff'); setIsModalOpen(true); }} onDelete={async (id: any) => { if(confirm("¿Eliminar empleado?")){ const res = await fetch(`${API_URL}/admin/staff/${id}`, {method:'DELETE'}); if(res.ok) refreshData(); } }} onAddClick={() => { setSelectedItem({name:'', role:'Entrenador', shift:'Mañana', password:'1234'}); setIsEditMode(false); setModalType('staff'); setIsModalOpen(true); }} /> : <NoAccess />;
       case 'Finanzas': return userRole === 'gerente' ? <FinanceModule data={financeData} members={members} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} filterType={filterType} setFilterType={setFilterType} /> : <NoAccess />;
       case 'Facturación': return (userRole === 'gerente' || userRole === 'administracion') ? <BillingModule members={members} /> : <NoAccess />;
@@ -916,8 +925,8 @@ function FinanceModule({ data, members, startDate, setStartDate, endDate, setEnd
 
   const totalFilteredRevenue = filteredHistory.reduce((acc:number, curr:any) => acc + curr.amount, 0);
 
-  const activeMembers = data.active_members || 1;
-  const arpu = activeMembers > 0 ? (totalFilteredRevenue / activeMembers) : 0;
+  const memberMap = Object.fromEntries((members || []).map((m: any) => [m.id, m.name]));
+  const debtors = (members || []).filter((m: any) => m.status === 'DEUDA' || m.status === 'POR VENCER');
 
   return (
     <div className="space-y-4">
@@ -935,7 +944,7 @@ function FinanceModule({ data, members, startDate, setStartDate, endDate, setEnd
          </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
          <div className="bg-white dark:bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-white/5 flex flex-col justify-between">
             <h3 className="text-[9px] font-black text-gray-500 dark:text-white/20 uppercase tracking-widest mb-4">Ingresos por Tipo de Plan</h3>
             <div className="h-40">
@@ -966,49 +975,57 @@ function FinanceModule({ data, members, startDate, setStartDate, endDate, setEnd
                </ResponsiveContainer>
             </div>
          </div>
-         <div className="bg-white dark:bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-white/5 flex flex-col gap-4">
-            {/* ARPU */}
-            <div className="text-center">
-              <p className="text-[8px] text-gray-500 dark:text-white/20 uppercase font-black tracking-widest" title="Ingreso Promedio por Usuario">ARPU (Promedio x Usuario)</p>
-              <p className="text-2xl font-black text-black dark:text-white mt-1">${arpu.toFixed(2)}</p>
-            </div>
-            {/* Historial de transacciones */}
-            <div>
-              <p className="text-[8px] text-gray-500 dark:text-white/20 uppercase font-black tracking-widest mb-2">Historial de Transacciones</p>
-              <div className="max-h-28 overflow-y-auto space-y-1 pr-1">
-                {filteredHistory.length === 0 ? (
-                  <p className="text-[9px] text-gray-400 dark:text-white/30 italic">Sin transacciones en el período</p>
-                ) : filteredHistory.slice().reverse().map((tx: any, i: number) => (
-                  <div key={i} className="flex justify-between items-center bg-gray-50 dark:bg-black/30 rounded-lg px-2 py-1">
-                    <div>
-                      <p className="text-[8px] font-black text-black dark:text-white leading-tight">{tx.member_name || `ID ${tx.member_id}`}</p>
-                      <p className="text-[7px] text-gray-400 dark:text-white/30">{new Date(tx.created_at).toLocaleDateString('es-AR')}</p>
-                    </div>
-                    <span className="text-[9px] font-black text-green-500">+${tx.amount?.toFixed(2)}</span>
-                  </div>
-                ))}
+      </div>
+
+      {/* Historial de Transacciones */}
+      <div className="bg-white dark:bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-white/5">
+        <h3 className="text-[9px] font-black text-gray-500 dark:text-white/20 uppercase tracking-widest mb-3">Historial de Transacciones</h3>
+        <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
+          {filteredHistory.length === 0 ? (
+            <p className="text-[9px] text-gray-400 dark:text-white/30 italic text-center py-4">Sin transacciones en el período seleccionado</p>
+          ) : filteredHistory.slice().reverse().map((tx: any, i: number) => {
+            const memberName = memberMap[tx.member_id] || tx.member_name || `Socio #${tx.member_id ?? '?'}`;
+            const txDate = tx.date ? new Date(tx.date + 'T00:00:00').toLocaleDateString('es-AR') : '—';
+            return (
+              <div key={i} className="flex justify-between items-center bg-gray-50 dark:bg-black/30 rounded-lg px-3 py-2">
+                <div>
+                  <p className="text-[9px] font-black text-black dark:text-white leading-tight">{memberName}</p>
+                  <p className="text-[7px] text-gray-400 dark:text-white/30">{txDate}</p>
+                </div>
+                <span className="text-[10px] font-black text-green-500">+${tx.amount?.toFixed(2) ?? '0.00'}</span>
               </div>
-            </div>
-            {/* Reporte de deudores y morosidad */}
-            <div>
-              <p className="text-[8px] text-gray-500 dark:text-white/20 uppercase font-black tracking-widest mb-2">Deudores y Morosidad</p>
-              <div className="max-h-28 overflow-y-auto space-y-1 pr-1">
-                {(members || []).filter((m: any) => m.status === 'DEUDA' || m.status === 'POR VENCER').length === 0 ? (
-                  <p className="text-[9px] text-gray-400 dark:text-white/30 italic">Sin socios en deuda</p>
-                ) : (members || []).filter((m: any) => m.status === 'DEUDA' || m.status === 'POR VENCER').map((m: any) => (
-                  <div key={m.id} className="flex justify-between items-center bg-gray-50 dark:bg-black/30 rounded-lg px-2 py-1">
-                    <div>
-                      <p className="text-[8px] font-black text-black dark:text-white leading-tight">{m.name}</p>
-                      <p className="text-[7px] text-gray-400 dark:text-white/30">DNI {m.dni}</p>
-                    </div>
-                    <span className={`text-[8px] font-black px-2 py-0.5 rounded-full ${m.status === 'DEUDA' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
-                      {m.status}
-                    </span>
-                  </div>
-                ))}
+            );
+          })}
+        </div>
+        <div className="mt-2 pt-2 border-t border-gray-100 dark:border-white/5 flex justify-between">
+          <p className="text-[8px] text-gray-400 dark:text-white/20 uppercase font-black">{filteredHistory.length} transacciones</p>
+          <p className="text-[9px] font-black text-green-500">Total: ${totalFilteredRevenue.toFixed(2)}</p>
+        </div>
+      </div>
+
+      {/* Deudores y Morosidad */}
+      <div className="bg-white dark:bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-white/5">
+        <h3 className="text-[9px] font-black text-gray-500 dark:text-white/20 uppercase tracking-widest mb-3">Reporte de Deudores y Morosidad</h3>
+        <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
+          {debtors.length === 0 ? (
+            <p className="text-[9px] text-gray-400 dark:text-white/30 italic text-center py-4">Sin socios en deuda o por vencer</p>
+          ) : debtors.map((m: any) => (
+            <div key={m.id} className="flex justify-between items-center bg-gray-50 dark:bg-black/30 rounded-lg px-3 py-2">
+              <div>
+                <p className="text-[9px] font-black text-black dark:text-white leading-tight">{m.name}</p>
+                <p className="text-[7px] text-gray-400 dark:text-white/30">DNI {m.dni} · {m.membership_type || 'Sin plan'}</p>
               </div>
+              <span className={`text-[8px] font-black px-2 py-0.5 rounded-full ${m.status === 'DEUDA' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                {m.status}
+              </span>
             </div>
-         </div>
+          ))}
+        </div>
+        {debtors.length > 0 && (
+          <div className="mt-2 pt-2 border-t border-gray-100 dark:border-white/5 flex justify-between">
+            <p className="text-[8px] text-gray-400 dark:text-white/20 uppercase font-black">{debtors.filter((m:any)=>m.status==='DEUDA').length} en deuda · {debtors.filter((m:any)=>m.status==='POR VENCER').length} por vencer</p>
+          </div>
+        )}
       </div>
     </div>
   );
