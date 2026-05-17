@@ -86,6 +86,21 @@ class BookingSchema(BaseModel):
     class Config:
         from_attributes = True
 
+class PlanBase(BaseModel):
+    name: str
+    price: float
+    days_per_week: int = 3
+    classes: List = []
+    is_active: bool = True
+
+class PlanCreate(PlanBase):
+    pass
+
+class PlanSchema(PlanBase):
+    id: int
+    class Config:
+        from_attributes = True
+
 class StaffBase(BaseModel):
     name: str
     username: Optional[str] = None

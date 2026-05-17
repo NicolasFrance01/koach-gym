@@ -63,3 +63,12 @@ class Product(Base):
     price = Column(Float)
     stock = Column(Integer)
     category = Column(String) # Supplements, Drinks, Merch
+
+class Plan(Base):
+    __tablename__ = "plans"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    price = Column(Float)
+    days_per_week = Column(Integer, default=3)
+    classes = Column(JSON, default=[])
+    is_active = Column(Boolean, default=True)

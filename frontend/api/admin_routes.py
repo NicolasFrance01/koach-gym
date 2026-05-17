@@ -198,6 +198,51 @@ def delete_staff(staff_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"status": "deleted"}
 
+@router.get("/plans", response_model=List[schemas.PlanSchema])
+def get_plans(db: Session = Depends(get_db)):
+    plans = db.query(models.Plan).filter(models.Plan.is_active == True).all()
+    # Seed default plans if empty
+    if not plans:
+        defaults = [
+            models.Plan(name="Básico (3 Días)", price=5000, days_per_week=3, classes=[], is_active=True),
+            models.Plan(name="Premium (Clases)", price=8500, days_per_week=5, classes=["Yoga", "Zumba"], is_active=True),
+            models.Plan(name="Elite (Libre)", price=12000, days_per_week=7, classes=["Yoga", "CrossFit", "Spinning"], is_active=True),
+            models.Plan(name="Boxeo", price=7000, days_per_week=3, classes=["Boxeo"], is_active=True),
+        ]
+        for p in defaults:
+            db.add(p)
+        db.commit()
+        plans = db.query(models.Plan).filter(models.Plan.is_active == True).all()
+    return plans
+
+@router.post("/plans", response_model=schemas.PlanSchema)
+def create_plan(plan: schemas.PlanCreate, db: Session = Depends(get_db)):
+    db_plan = models.Plan(**plan.dict())
+    db.add(db_plan)
+    db.commit()
+    db.refresh(db_plan)
+    return db_plan
+
+@router.put("/plans/{plan_id}", response_model=schemas.PlanSchema)
+def update_plan(plan_id: int, plan: schemas.PlanCreate, db: Session = Depends(get_db)):
+    db_plan = db.query(models.Plan).filter(models.Plan.id == plan_id).first()
+    if not db_plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    for key, value in plan.dict().items():
+        setattr(db_plan, key, value)
+    db.commit()
+    db.refresh(db_plan)
+    return db_plan
+
+@router.delete("/plans/{plan_id}")
+def delete_plan(plan_id: int, db: Session = Depends(get_db)):
+    db_plan = db.query(models.Plan).filter(models.Plan.id == plan_id).first()
+    if not db_plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    db_plan.is_active = False
+    db.commit()
+    return {"status": "deleted"}
+
 @router.get("/analytics/ai")
 def get_ai_analytics(db: Session = Depends(get_db)):
     # Mock data for AI Analytics Charts
