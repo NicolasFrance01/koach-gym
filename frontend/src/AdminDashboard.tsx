@@ -9,9 +9,9 @@ import autoTable from 'jspdf-autotable';
 
 export default function AdminDashboard() {
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState<'gerente' | 'administracion' | 'entrenador'>('gerente');
-  const [loggedUser, setLoggedUser] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem('gym_session'));
+  const [userRole, setUserRole] = useState<'gerente' | 'administracion' | 'entrenador'>(() => (localStorage.getItem('gym_role') as any) || 'gerente');
+  const [loggedUser, setLoggedUser] = useState<any>(() => { try { const s = localStorage.getItem('gym_user'); return s ? JSON.parse(s) : null; } catch { return null; } });
   const [loginUser, setLoginUser] = useState('');
   const [loginPass, setLoginPass] = useState('');
 
@@ -140,9 +140,11 @@ export default function AdminDashboard() {
     }
     
     // Cuenta maestra de respaldo (por si la BD está vacía)
-    if (loginUser === 'master' && loginPass === 'admin123') { 
-      setIsAuthenticated(true); setUserRole('gerente'); setLoggedUser({ name: 'Master', role: 'Gerente', id: 0 }); setActiveTab('Resumen'); 
-      return; 
+    if (loginUser === 'master' && loginPass === 'admin123') {
+      const u = { name: 'Master', role: 'Gerente', id: 0 };
+      localStorage.setItem('gym_session', '1'); localStorage.setItem('gym_role', 'gerente'); localStorage.setItem('gym_user', JSON.stringify(u));
+      setIsAuthenticated(true); setUserRole('gerente'); setLoggedUser(u); setActiveTab('Resumen');
+      return;
     }
 
     try {
@@ -155,9 +157,10 @@ export default function AdminDashboard() {
         );
         
         if (staffMember && loginPass === (staffMember.password || '1234')) {
+          const role = staffMember.role.toLowerCase() === 'administración' ? 'administracion' : staffMember.role.toLowerCase();
+          localStorage.setItem('gym_session', '1'); localStorage.setItem('gym_role', role); localStorage.setItem('gym_user', JSON.stringify(staffMember));
           setIsAuthenticated(true);
           setLoggedUser(staffMember);
-          const role = staffMember.role.toLowerCase() === 'administración' ? 'administracion' : staffMember.role.toLowerCase();
           setUserRole(role as any);
           if (role === 'entrenador') setActiveTab('Socios');
           else setActiveTab('Resumen');
@@ -661,7 +664,7 @@ export default function AdminDashboard() {
             </>
           )}
         </nav>
-        <button onClick={() => setIsAuthenticated(false)} className="w-full p-2 bg-red-500/10 hover:bg-red-500 rounded-xl text-red-500 hover:text-black dark:hover:text-white text-[9px] font-black uppercase tracking-widest transition-all mt-4">Salir</button>
+        <button onClick={() => { localStorage.removeItem('gym_session'); localStorage.removeItem('gym_role'); localStorage.removeItem('gym_user'); setIsAuthenticated(false); setLoggedUser(null); }} className="w-full p-2 bg-red-500/10 hover:bg-red-500 rounded-xl text-red-500 hover:text-black dark:hover:text-white text-[9px] font-black uppercase tracking-widest transition-all mt-4">Salir</button>
       </aside>
 
       <main className="flex-1 overflow-y-auto p-6 relative bg-gray-100 dark:bg-[#050505]">
