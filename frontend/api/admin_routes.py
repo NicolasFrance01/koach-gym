@@ -211,20 +211,7 @@ def delete_staff(staff_id: int, db: Session = Depends(get_db)):
 
 @router.get("/plans", response_model=List[schemas.PlanSchema])
 def get_plans(db: Session = Depends(get_db)):
-    plans = db.query(models.Plan).filter(models.Plan.is_active == True).all()
-    # Seed default plans if empty
-    if not plans:
-        defaults = [
-            models.Plan(name="Básico (3 Días)", price=5000, days_per_week=3, classes=[], is_active=True),
-            models.Plan(name="Premium (Clases)", price=8500, days_per_week=5, classes=["Yoga", "Zumba"], is_active=True),
-            models.Plan(name="Elite (Libre)", price=12000, days_per_week=7, classes=["Yoga", "CrossFit", "Spinning"], is_active=True),
-            models.Plan(name="Boxeo", price=7000, days_per_week=3, classes=["Boxeo"], is_active=True),
-        ]
-        for p in defaults:
-            db.add(p)
-        db.commit()
-        plans = db.query(models.Plan).filter(models.Plan.is_active == True).all()
-    return plans
+    return db.query(models.Plan).filter(models.Plan.is_active == True).all()
 
 @router.post("/plans", response_model=schemas.PlanSchema)
 def create_plan(plan: schemas.PlanCreate, db: Session = Depends(get_db)):
