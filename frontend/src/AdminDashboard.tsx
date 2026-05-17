@@ -829,7 +829,7 @@ function memberDaysInfo(joinedAt: string, status: string): { daysIn: number; day
   if (!joinedAt) return { daysIn: 0, daysLeft: 30, overdueDays: 0 };
   const joined = new Date(joinedAt);
   const today = new Date();
-  const daysSince = Math.floor((today.getTime() - joined.getTime()) / 86400000);
+  const daysSince = Math.max(0, Math.floor((today.getTime() - joined.getTime()) / 86400000));
   if (status === 'DEUDA') {
     const lastCycleEnd = Math.floor(daysSince / 30) * 30;
     const overdueDays = daysSince - lastCycleEnd;
