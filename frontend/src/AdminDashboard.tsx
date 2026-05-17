@@ -904,9 +904,7 @@ function MembersModule({ members, onEdit, onDelete, onAddClick, onPayClick, onHi
               </div>
               <div className="mb-3 px-1">
                 <p className="text-[7px] text-gray-400 dark:text-white/20 font-black uppercase">
-                  {m.status === 'DEUDA'
-                    ? `Vencido${overdueDays > 0 ? ` · ${overdueDays}d sin pagar` : ''}`
-                    : `Día ${daysIn}/30 · ${daysLeft <= 0 ? 'Vencido' : `${daysLeft}d restantes`}`}
+                  {`Día ${daysIn}/30 · ${daysLeft <= 0 ? '0d restantes' : `${daysLeft}d restantes`}`}
                 </p>
                 <div className="w-full h-1 bg-gray-100 dark:bg-white/5 rounded-full mt-1 overflow-hidden">
                   <div className={`h-full rounded-full transition-all ${m.status === 'DEUDA' ? 'bg-red-500' : daysLeft <= 7 ? 'bg-red-500' : daysLeft <= 14 ? 'bg-yellow-500' : 'bg-green-500'}`} style={{ width: m.status === 'DEUDA' ? '100%' : `${Math.min(100, (daysIn / 30) * 100)}%` }} />
