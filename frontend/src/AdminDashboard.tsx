@@ -889,7 +889,7 @@ function MembersModule({ members, onEdit, onDelete, onAddClick, onPayClick, onHi
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         {filteredMembers.map((m: any) => {
-          const { daysIn, daysLeft, overdueDays } = memberDaysInfo(m.joined_at, m.status);
+          const { daysIn, daysLeft } = memberDaysInfo(m.joined_at, m.status);
           return (
             <div key={m.id} className="p-4 bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/5 hover:border-orange-500/10 transition-all group overflow-hidden">
               <div className="flex items-start justify-between mb-2">
