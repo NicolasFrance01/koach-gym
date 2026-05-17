@@ -68,7 +68,12 @@ def get_all_members(db: Session = Depends(get_db)):
 @router.post("/members", response_model=schemas.MemberSchema)
 def create_member(member: schemas.MemberCreate, db: Session = Depends(get_db)):
     print(f"Creating member: {member.name} with DNI {member.dni}")
-    db_member = models.Member(**member.dict())
+    data = member.dict()
+    if not data.get('email'):
+        data['email'] = None
+    if not data.get('phone'):
+        data['phone'] = None
+    db_member = models.Member(**data)
     db.add(db_member)
     try:
         db.commit()
@@ -85,10 +90,15 @@ def update_member(member_id: int, member_data: schemas.MemberCreate, db: Session
     db_member = db.query(models.Member).filter(models.Member.id == member_id).first()
     if not db_member:
         raise HTTPException(status_code=404, detail="Member not found")
-    
-    for key, value in member_data.dict().items():
+
+    data = member_data.dict()
+    if not data.get('email'):
+        data['email'] = None
+    if not data.get('phone'):
+        data['phone'] = None
+    for key, value in data.items():
         setattr(db_member, key, value)
-    
+
     db.commit()
     db.refresh(db_member)
     return db_member
@@ -104,12 +114,13 @@ def update_member_status(member_id: int, status: str, db: Session = Depends(get_
 
 @router.post("/payments")
 def record_payment(member_id: int, amount: float, method: str = "card", processed_by: str = "", db: Session = Depends(get_db)):
-    payment = models.Payment(member_id=member_id, amount=amount, status="paid", method=method, stripe_id=processed_by or None, created_at=datetime.datetime.utcnow())
+    now = datetime.datetime.utcnow()
+    payment = models.Payment(member_id=member_id, amount=amount, status="paid", method=method, stripe_id=processed_by or None, created_at=now)
     db.add(payment)
-    # Update member status to ACTIVO if they were in debt
     member = db.query(models.Member).get(member_id)
     if member:
         member.status = "ACTIVO"
+        member.joined_at = now  # restart 30-day cycle from today
     db.commit()
     return {"status": "payment recorded"}
 
