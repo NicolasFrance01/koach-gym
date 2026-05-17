@@ -822,14 +822,19 @@ function SummaryCard({ title, value, icon, onClick, color }: any) {
   return <div onClick={onClick} className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 p-4 rounded-xl cursor-pointer hover:border-orange-500/20 transition-all flex justify-between items-center"><div className="space-y-1"><p className="text-[7px] font-black text-gray-500 dark:text-white/20 uppercase tracking-widest">{title}</p><p className="text-lg font-black text-black dark:text-white">{value}</p></div><div className={`${colors[color]} bg-white dark:bg-white/5 p-2 rounded-lg`}>{icon}</div></div>;
 }
 
-function memberDaysInfo(joinedAt: string): { daysIn: number; daysLeft: number } {
-  if (!joinedAt) return { daysIn: 0, daysLeft: 30 };
+function memberDaysInfo(joinedAt: string, status: string): { daysIn: number; daysLeft: number; overdueDays: number } {
+  if (!joinedAt) return { daysIn: 0, daysLeft: 30, overdueDays: 0 };
   const joined = new Date(joinedAt);
   const today = new Date();
   const daysSince = Math.floor((today.getTime() - joined.getTime()) / 86400000);
+  if (status === 'DEUDA') {
+    const lastCycleEnd = Math.floor(daysSince / 30) * 30;
+    const overdueDays = daysSince - lastCycleEnd;
+    return { daysIn: 30, daysLeft: 0, overdueDays };
+  }
   const daysIn = daysSince % 30;
   const daysLeft = 30 - daysIn;
-  return { daysIn, daysLeft };
+  return { daysIn, daysLeft, overdueDays: 0 };
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -881,7 +886,7 @@ function MembersModule({ members, onEdit, onDelete, onAddClick, onPayClick, onHi
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         {filteredMembers.map((m: any) => {
-          const { daysIn, daysLeft } = memberDaysInfo(m.joined_at);
+          const { daysIn, daysLeft, overdueDays } = memberDaysInfo(m.joined_at, m.status);
           return (
             <div key={m.id} className="p-4 bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/5 hover:border-orange-500/10 transition-all group overflow-hidden">
               <div className="flex items-start justify-between mb-2">
@@ -896,10 +901,12 @@ function MembersModule({ members, onEdit, onDelete, onAddClick, onPayClick, onHi
               </div>
               <div className="mb-3 px-1">
                 <p className="text-[7px] text-gray-400 dark:text-white/20 font-black uppercase">
-                  Día {daysIn}/30 · {daysLeft <= 0 ? 'Vencido' : `${daysLeft}d restantes`}
+                  {m.status === 'DEUDA'
+                    ? `Vencido${overdueDays > 0 ? ` · ${overdueDays}d sin pagar` : ''}`
+                    : `Día ${daysIn}/30 · ${daysLeft <= 0 ? 'Vencido' : `${daysLeft}d restantes`}`}
                 </p>
                 <div className="w-full h-1 bg-gray-100 dark:bg-white/5 rounded-full mt-1 overflow-hidden">
-                  <div className={`h-full rounded-full transition-all ${daysLeft <= 7 ? 'bg-red-500' : daysLeft <= 14 ? 'bg-yellow-500' : 'bg-green-500'}`} style={{ width: `${Math.min(100, (daysIn / 30) * 100)}%` }} />
+                  <div className={`h-full rounded-full transition-all ${m.status === 'DEUDA' ? 'bg-red-500' : daysLeft <= 7 ? 'bg-red-500' : daysLeft <= 14 ? 'bg-yellow-500' : 'bg-green-500'}`} style={{ width: m.status === 'DEUDA' ? '100%' : `${Math.min(100, (daysIn / 30) * 100)}%` }} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
