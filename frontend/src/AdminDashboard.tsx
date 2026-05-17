@@ -194,7 +194,7 @@ export default function AdminDashboard() {
       const stats = await statsRes.json();
       
       // Calculate real revenue from all members' history
-      const allHistory = membersData.flatMap((m:any) => (m.billing_history || []));
+      const allHistory = membersData.flatMap((m:any) => (m.billing_history || []).map((h:any) => ({ ...h, member_id: m.id, member_name: m.name })));
       const totalRevenue = allHistory.reduce((acc:number, curr:any) => acc + curr.amount, 0);
 
       // Group history by month for cashflow
@@ -789,42 +789,95 @@ function SummaryCard({ title, value, icon, onClick, color }: any) {
   return <div onClick={onClick} className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 p-4 rounded-xl cursor-pointer hover:border-orange-500/20 transition-all flex justify-between items-center"><div className="space-y-1"><p className="text-[7px] font-black text-gray-500 dark:text-white/20 uppercase tracking-widest">{title}</p><p className="text-lg font-black text-black dark:text-white">{value}</p></div><div className={`${colors[color]} bg-white dark:bg-white/5 p-2 rounded-lg`}>{icon}</div></div>;
 }
 
-function MembersModule({ members, onEdit, onDelete, onAddClick, onPayClick, onHistory, searchQuery, setSearchQuery }: any) {
-  const filteredMembers = members.filter((m: any) => 
-    m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    m.dni.includes(searchQuery)
+function memberDaysInfo(joinedAt: string): { daysIn: number; daysLeft: number } {
+  if (!joinedAt) return { daysIn: 0, daysLeft: 30 };
+  const joined = new Date(joinedAt);
+  const today = new Date();
+  const daysSince = Math.floor((today.getTime() - joined.getTime()) / 86400000);
+  const daysIn = daysSince % 30;
+  const daysLeft = 30 - daysIn;
+  return { daysIn, daysLeft };
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const cfg: Record<string, string> = {
+    'ACTIVO':     'bg-green-500/15 text-green-400',
+    'AL DIA':     'bg-green-500/15 text-green-400',
+    'POR VENCER': 'bg-yellow-500/15 text-yellow-400',
+    'DEUDA':      'bg-red-500/15 text-red-400',
+    'INACTIVO':   'bg-gray-500/15 text-gray-400',
+  };
+  const label: Record<string, string> = { 'ACTIVO': 'AL DÍA', 'AL DIA': 'AL DÍA' };
+  return (
+    <span className={`text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-wide ${cfg[status] || 'bg-gray-500/15 text-gray-400'}`}>
+      {label[status] || status}
+    </span>
   );
+}
+
+function MembersModule({ members, onEdit, onDelete, onAddClick, onPayClick, onHistory, searchQuery, setSearchQuery }: any) {
+  const [statusFilter, setStatusFilter] = useState<string>('TODOS');
+
+  const statusOptions = ['TODOS', 'ACTIVO', 'POR VENCER', 'DEUDA', 'INACTIVO'];
+
+  const filteredMembers = members.filter((m: any) => {
+    const matchSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase()) || m.dni.includes(searchQuery);
+    const matchStatus = statusFilter === 'TODOS' || m.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h3 className="font-black text-lg uppercase">Gestión de Socios</h3>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-64">
+        <div className="flex items-center gap-3 w-full sm:w-auto flex-wrap">
+          <div className="relative flex-1 sm:w-52">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-white/20" size={14} />
-            <input 
-              type="text" 
-              placeholder="Buscar por DNI o Nombre..." 
-              className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-2 pl-9 pr-4 text-black dark:text-white text-[10px] outline-none focus:border-orange-500/50 transition-all"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <input type="text" placeholder="Buscar por DNI o Nombre..." className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-2 pl-9 pr-4 text-black dark:text-white text-[10px] outline-none focus:border-orange-500/50 transition-all" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          </div>
+          <div className="flex gap-1 flex-wrap">
+            {statusOptions.map(s => (
+              <button key={s} onClick={() => setStatusFilter(s)}
+                className={`px-3 py-1.5 rounded-lg text-[8px] font-black uppercase transition-all ${statusFilter === s ? 'bg-orange-500 text-black' : 'bg-white dark:bg-white/5 text-gray-500 dark:text-white/30 hover:text-black dark:hover:text-white'}`}>
+                {s === 'TODOS' ? `Todos (${members.length})` : s === 'ACTIVO' ? `Al día (${members.filter((m:any)=>m.status==='ACTIVO'||m.status==='AL DIA').length})` : s === 'POR VENCER' ? `Por vencer (${members.filter((m:any)=>m.status==='POR VENCER').length})` : s === 'DEUDA' ? `Deuda (${members.filter((m:any)=>m.status==='DEUDA').length})` : `Inactivo (${members.filter((m:any)=>m.status==='INACTIVO').length})`}
+              </button>
+            ))}
           </div>
           <button onClick={onAddClick} className="bg-orange-500 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-xl shadow-orange-500/20 whitespace-nowrap">+ Nuevo Socio</button>
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-         {filteredMembers.map((m: any) => (
-           <div key={m.id} className="p-4 bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/5 hover:border-orange-500/10 transition-all group overflow-hidden">
-             <div className="flex items-center justify-between mb-4"><div className="flex items-center gap-3 min-w-0"><div className="w-10 h-10 bg-neutral-800 rounded-xl flex items-center justify-center font-black text-orange-500 text-sm shrink-0">{m.name[0]}</div><div className="min-w-0"><p className="font-black text-black dark:text-white text-[10px] uppercase truncate">{m.name}</p><p className="text-[8px] text-gray-500 dark:text-white/20 uppercase font-black truncate">{m.membership_type}</p></div></div>{m.status === 'ACTIVO' ? <CheckCircle className="text-green-500 shrink-0" size={12} /> : <XCircle className="text-red-500 shrink-0" size={12} />}</div>
-             <div className="grid grid-cols-2 gap-2">
-               <button onClick={() => onPayClick(m)} className="col-span-2 py-2 bg-green-500/10 text-green-500 rounded-lg text-[8px] font-black uppercase hover:bg-green-500 hover:text-black dark:text-white transition-all">Cobrar</button>
-               <button onClick={() => onEdit(m)} className="py-2 bg-white dark:bg-white/5 text-gray-600 dark:text-white/40 rounded-lg text-[8px] font-black uppercase">Editar</button>
-               <button onClick={() => onHistory(m)} className="py-2 bg-white dark:bg-white/5 text-orange-400 rounded-lg text-[8px] font-black uppercase">Historial</button>
-               <button onClick={() => onDelete(m.id)} className="col-span-2 py-2 bg-red-500/10 text-red-500 rounded-lg text-[8px] font-black uppercase opacity-0 group-hover:opacity-100 transition-all">Dar de Baja</button>
-             </div>
-           </div>
-         ))}
+        {filteredMembers.map((m: any) => {
+          const { daysIn, daysLeft } = memberDaysInfo(m.joined_at);
+          return (
+            <div key={m.id} className="p-4 bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/5 hover:border-orange-500/10 transition-all group overflow-hidden">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 bg-neutral-800 rounded-xl flex items-center justify-center font-black text-orange-500 text-sm shrink-0">{m.name[0]}</div>
+                  <div className="min-w-0">
+                    <p className="font-black text-black dark:text-white text-[10px] uppercase truncate">{m.name}</p>
+                    <p className="text-[8px] text-gray-500 dark:text-white/20 uppercase font-black truncate">{m.membership_type || '—'}</p>
+                  </div>
+                </div>
+                <StatusBadge status={m.status} />
+              </div>
+              <div className="mb-3 px-1">
+                <p className="text-[7px] text-gray-400 dark:text-white/20 font-black uppercase">
+                  Día {daysIn}/30 · {daysLeft <= 0 ? 'Vencido' : `${daysLeft}d restantes`}
+                </p>
+                <div className="w-full h-1 bg-gray-100 dark:bg-white/5 rounded-full mt-1 overflow-hidden">
+                  <div className={`h-full rounded-full transition-all ${daysLeft <= 7 ? 'bg-red-500' : daysLeft <= 14 ? 'bg-yellow-500' : 'bg-green-500'}`} style={{ width: `${Math.min(100, (daysIn / 30) * 100)}%` }} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <button onClick={() => onPayClick(m)} className="col-span-2 py-2 bg-green-500/10 text-green-500 rounded-lg text-[8px] font-black uppercase hover:bg-green-500 hover:text-black dark:text-white transition-all">Cobrar</button>
+                <button onClick={() => onEdit(m)} className="py-2 bg-white dark:bg-white/5 text-gray-600 dark:text-white/40 rounded-lg text-[8px] font-black uppercase">Editar</button>
+                <button onClick={() => onHistory(m)} className="py-2 bg-white dark:bg-white/5 text-orange-400 rounded-lg text-[8px] font-black uppercase">Historial</button>
+                <button onClick={() => onDelete(m.id)} className="col-span-2 py-2 bg-red-500/10 text-red-500 rounded-lg text-[8px] font-black uppercase opacity-0 group-hover:opacity-100 transition-all">Dar de Baja</button>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
