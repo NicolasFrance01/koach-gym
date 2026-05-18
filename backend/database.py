@@ -1,18 +1,28 @@
+import os
+import sys
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Hardcoded connection string exactly as requested to prevent parsing errors
-DATABASE_URL = "postgresql://neondb_owner:npg_eCrGKbztO9h2@ep-orange-cell-am4zmpka-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require"
+# When running as frozen exe, .env lives next to the executable
+if getattr(sys, 'frozen', False):
+    _BASE_DIR = os.path.dirname(sys.executable)
+else:
+    _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-try:
-    engine = create_engine(DATABASE_URL)
-    # Fast test
-    with engine.connect() as conn:
-        pass
-    print("Database connection successful.")
-except Exception as e:
-    print(f"CRITICAL ERROR: Failed to connect to database: {e}")
-    raise
+load_dotenv(os.path.join(_BASE_DIR, '.env'))
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL no configurado. "
+        f"Creá un archivo .env en {_BASE_DIR} con:\n"
+        "DATABASE_URL=postgresql://usuario:clave@host/db?sslmode=require"
+    )
+
+# pool_pre_ping retries dead connections automatically at query time
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

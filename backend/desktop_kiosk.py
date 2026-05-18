@@ -1,11 +1,22 @@
+import sys
+import os
+
+# Resolve .env path before any other imports that depend on env vars
+if getattr(sys, 'frozen', False):
+    _BASE_DIR = os.path.dirname(sys.executable)
+else:
+    _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+from dotenv import load_dotenv
+load_dotenv(os.path.join(_BASE_DIR, '.env'))
+
 import cv2
 import customtkinter as ctk
 from PIL import Image, ImageTk
 import threading
 import time
-import os
+import datetime
 import winsound
-from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from database import SessionLocal
 import models
@@ -13,8 +24,21 @@ from cv_engine import CVEngine
 import uvicorn
 from main import app as fastapi_app
 
-# Load environment variables
-load_dotenv()
+def compute_status(member) -> str:
+    """Calcula el estado según el ciclo mensual desde joined_at. INACTIVO se respeta siempre."""
+    if member.status == "INACTIVO":
+        return "INACTIVO"
+    if not member.joined_at:
+        return member.status
+    today = datetime.datetime.utcnow()
+    days_since = (today - member.joined_at).days
+    days_in_cycle = days_since % 30
+    days_remaining = 30 - days_in_cycle
+    if days_since > 0 and days_in_cycle == 0:
+        return "DEUDA"
+    if days_remaining <= 7:
+        return "POR VENCER"
+    return "ACTIVO"
 
 # Global UI Scaling Fix for High DPI
 ctk.set_appearance_mode("Dark")
@@ -25,22 +49,32 @@ ctk.set_window_scaling(1.0)
 class SplashScreen(ctk.CTkToplevel):
     def __init__(self):
         super().__init__()
-        self.title("GYM-ATLAS Boot")
-        self.geometry("400x500")
+        self.title("Fusion Fitness")
+        self.geometry("400x520")
         self.overrideredirect(True)
         self.attributes("-topmost", True)
         self.configure(fg_color="#050505")
-        
+
         # Center Window
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
         x = (sw // 2) - 200
-        y = (sh // 2) - 250
+        y = (sh // 2) - 260
         self.geometry(f"+{x}+{y}")
 
+        # Logo
+        logo_path = os.path.join(os.path.dirname(__file__), "logo_B.png")
+        if not os.path.exists(logo_path):
+            logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo_B.png")
+        if os.path.exists(logo_path):
+            logo_img = ctk.CTkImage(light_image=Image.open(logo_path),
+                                    dark_image=Image.open(logo_path), size=(90, 90))
+            ctk.CTkLabel(self, image=logo_img, text="").pack(pady=(50, 8))
+
         # UI Elements
-        self.label = ctk.CTkLabel(self, text="GYM-ATLAS", font=ctk.CTkFont(size=36, weight="bold", family="Helvetica"))
-        self.label.pack(pady=(120, 20))
+        self.label = ctk.CTkLabel(self, text="FUSION FITNESS", font=ctk.CTkFont(size=30, weight="bold", family="Helvetica"), text_color="#f97316")
+        self.label.pack(pady=(0, 4))
+        ctk.CTkLabel(self, text="Sistema de Control de Acceso", font=ctk.CTkFont(size=11), text_color="#444").pack(pady=(0, 10))
         
         self.status = ctk.CTkLabel(self, text="Inicializando...", font=ctk.CTkFont(size=14), text_color="#666")
         self.status.pack(pady=10)
@@ -57,7 +91,7 @@ class SplashScreen(ctk.CTkToplevel):
 class GymDesktopKiosk:
     def __init__(self, root):
         self.root = root
-        self.root.title("GYM-ATLAS | Smart Access Control")
+        self.root.title("Fusion Fitness | Control de Acceso")
         self.root.geometry("1280x800")
         self.root.configure(fg_color="#000000")
         self.root.withdraw()
@@ -70,24 +104,30 @@ class GymDesktopKiosk:
         threading.Thread(target=self._initialization_thread, daemon=True).start()
 
     def _initialization_thread(self):
-        # Phase 1: DB
-        self.splash.update_status(0.2, "Estableciendo conexión con la nube...")
-        time.sleep(0.5)
-        
-        # Phase 2: API
-        self.splash.update_status(0.4, "Iniciando Bridge API sincronizado...")
+        # Wait for network + DB — retry indefinitely until connection succeeds
+        from sqlalchemy import text
+        attempt = 0
+        while True:
+            attempt += 1
+            try:
+                self.splash.update_status(0.2, f"Conectando... intento {attempt}")
+                db = SessionLocal()
+                db.execute(text("SELECT 1"))
+                db.close()
+                break  # connection OK
+            except Exception:
+                msg = f"Sin red, reintentando ({attempt})..."
+                self.splash.update_status(0.2, msg)
+                time.sleep(4)
+
+        self.splash.update_status(0.5, "Iniciando servidor...")
         threading.Thread(target=lambda: uvicorn.run(fastapi_app, host="0.0.0.0", port=8000, log_level="error"), daemon=True).start()
-        time.sleep(0.5)
-        
-        # Phase 3: AI Engine
-        self.splash.update_status(0.7, "Activando Motor IA YOLOv8...")
+
+        self.splash.update_status(0.8, "Iniciando cámara...")
         self.cv_engine = CVEngine()
         self.cv_engine.start()
-        
-        # Phase 4: Finalize
-        self.splash.update_status(0.9, "Cargando Interfaz Premium...")
-        time.sleep(0.8)
-        
+
+        self.splash.update_status(1.0, "Listo!")
         self.root.after(0, self.launch_main_ui)
 
     def launch_main_ui(self):
@@ -116,8 +156,16 @@ class GymDesktopKiosk:
         self.video_label.pack(expand=True, fill="both")
 
         # Sidebar Elements
-        ctk.CTkLabel(self.sidebar, text="GYM-ATLAS", font=ctk.CTkFont(size=36, weight="bold")).pack(pady=(80, 20))
-        ctk.CTkLabel(self.sidebar, text="CONTROL DE ACCESO", font=ctk.CTkFont(size=14, weight="bold"), text_color="#333").pack(pady=(0, 40))
+        # Logo en sidebar
+        logo_path = os.path.join(os.path.dirname(__file__), "logo_B.png")
+        if not os.path.exists(logo_path):
+            logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo_B.png")
+        if os.path.exists(logo_path):
+            logo_img = ctk.CTkImage(light_image=Image.open(logo_path),
+                                    dark_image=Image.open(logo_path), size=(80, 80))
+            ctk.CTkLabel(self.sidebar, image=logo_img, text="").pack(pady=(40, 8))
+        ctk.CTkLabel(self.sidebar, text="FUSION FITNESS", font=ctk.CTkFont(size=28, weight="bold"), text_color="#f97316").pack(pady=(0, 4))
+        ctk.CTkLabel(self.sidebar, text="CONTROL DE ACCESO", font=ctk.CTkFont(size=12, weight="bold"), text_color="#333").pack(pady=(0, 30))
 
         # INPUT CONTAINER (To easily hide/show)
         self.input_container = ctk.CTkFrame(self.sidebar, fg_color="transparent")
@@ -180,7 +228,7 @@ class GymDesktopKiosk:
         self.status_label.pack(expand=True, pady=(0, 20))
 
         # Versioning
-        ctk.CTkLabel(self.sidebar, text="ATLAS ENGINE v2.6 | SYNC: ONLINE", font=ctk.CTkFont(size=9), text_color="#1a1a1a").pack(side="bottom", pady=20)
+        ctk.CTkLabel(self.sidebar, text="Fusion Fitness v2.6 | SYNC: ONLINE", font=ctk.CTkFont(size=9), text_color="#1a1a1a").pack(side="bottom", pady=20)
 
     def handle_backspace(self):
         curr = self.dni_entry.get()
@@ -201,8 +249,12 @@ class GymDesktopKiosk:
         try:
             member = db.query(models.Member).filter(models.Member.dni == dni).first()
             if member:
-                self.cv_engine.set_member_status(member.name, member.status)
-                self.root.after(0, lambda: self.render_status_result(member.name, member.status, dni))
+                status = compute_status(member)
+                if status != member.status:
+                    member.status = status
+                    db.commit()
+                self.cv_engine.set_member_status(member.name, status)
+                self.root.after(0, lambda: self.render_status_result(member.name, status, dni))
             else:
                 self.root.after(0, lambda: self.render_status_result("ERROR", "NO EXISTE", dni))
         except Exception:
@@ -291,7 +343,7 @@ class GymDesktopKiosk:
                 ctk_img = ctk.CTkImage(light_image=img, dark_image=img, size=(new_w, new_h))
                 self.video_label.configure(image=ctk_img)
         
-        self.root.after(20, self.update_video_loop)
+        self.root.after(33, self.update_video_loop)
 
 if __name__ == "__main__":
     root = ctk.CTk()
