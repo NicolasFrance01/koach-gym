@@ -33,6 +33,7 @@ export default function AdminDashboard() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [memberCheckins, setMemberCheckins] = useState<any[]>([]);
+  const [checkinStats, setCheckinStats] = useState<any>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
@@ -455,7 +456,7 @@ export default function AdminDashboard() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'Socios': return <MembersModule members={members} searchQuery={searchQuery} setSearchQuery={setSearchQuery} onHistory={(m:any)=>{ setSelectedItem(m); setMemberCheckins([]); setModalType('history'); setIsModalOpen(true); fetch(`${API_URL}/admin/members/${m.id}/checkins`).then(r=>r.json()).then(data=>setMemberCheckins(Array.isArray(data)?data:[])).catch(()=>{}); }} onEdit={(m: any) => { const validPlan = plans.find((p:any) => p.name === m.membership_type)?.name || plans[0]?.name || ''; setSelectedItem({...m, membership_type: validPlan}); setIsEditMode(true); setModalType('member'); setIsModalOpen(true); }} onDelete={async (id: any) => { if(confirm("¿Dar de baja socio?")){ const res = await fetch(`${API_URL}/admin/members/${id}`, {method:'DELETE'}); if(res.ok) refreshData(); } }} onAddClick={() => { setSelectedItem({name:'', dni:'', phone:'', email:'', password:'1234', status:'ACTIVO', membership_type: plans[0]?.name || ''}); setIsEditMode(false); setModalType('member'); setIsModalOpen(true); }} onPayClick={(m: any) => { setSelectedItem(m); setIsPaymentModalOpen(true); }} />;
+      case 'Socios': return <MembersModule members={members} searchQuery={searchQuery} setSearchQuery={setSearchQuery} onHistory={(m:any)=>{ setSelectedItem(m); setMemberCheckins([]); setCheckinStats(null); setModalType('history'); setIsModalOpen(true); fetch(`${API_URL}/admin/members/${m.id}/checkins`).then(r=>r.json()).then(data=>{ if(data.checkins){ setMemberCheckins(data.checkins); setCheckinStats({total:data.total_sessions,used:data.sessions_used,remaining:data.sessions_remaining}); } }).catch(()=>{}); }} onEdit={(m: any) => { const validPlan = plans.find((p:any) => p.name === m.membership_type)?.name || plans[0]?.name || ''; setSelectedItem({...m, membership_type: validPlan}); setIsEditMode(true); setModalType('member'); setIsModalOpen(true); }} onDelete={async (id: any) => { if(confirm("¿Dar de baja socio?")){ const res = await fetch(`${API_URL}/admin/members/${id}`, {method:'DELETE'}); if(res.ok) refreshData(); } }} onAddClick={() => { setSelectedItem({name:'', dni:'', phone:'', email:'', password:'1234', status:'ACTIVO', membership_type: plans[0]?.name || ''}); setIsEditMode(false); setModalType('member'); setIsModalOpen(true); }} onPayClick={(m: any) => { setSelectedItem(m); setIsPaymentModalOpen(true); }} />;
       case 'Planes': return <PlansModule plans={plans} onEdit={(p:any)=>{setSelectedItem(p); setIsEditMode(true); setModalType('plan'); setIsModalOpen(true);}} onDelete={async (id:any)=>{ if(!confirm('¿Eliminar plan?')) return; const res = await fetch(`${API_URL}/admin/plans/${id}`,{method:'DELETE'}); if(res.ok) refreshData(); }} onAddClick={()=>{setSelectedItem({name:'', price:0, daysPerWeek:3, classes:[]}); setIsEditMode(false); setModalType('plan'); setIsModalOpen(true);}} />;
       case 'Mi Perfil': return <ProfileModule user={loggedUser} onSave={async (newPassword: string) => {
         if (!newPassword) { alert('Ingresá una nueva contraseña'); return; }
@@ -553,7 +554,8 @@ export default function AdminDashboard() {
                        </div>
                        {/* Asistencia */}
                        <div>
-                         <p className="text-[8px] font-black uppercase text-blue-400 mb-2 tracking-widest">Asistencia · {memberCheckins.length} ingresos</p>
+                         <p className="text-[8px] font-black uppercase text-blue-400 mb-1 tracking-widest">Asistencia · {memberCheckins.length} ingresos</p>
+                         {checkinStats && <div className="flex gap-2 mb-2">{[{l:'Total',v:checkinStats.total,c:'text-white/40'},{l:'Usadas',v:checkinStats.used,c:'text-orange-400'},{l:'Restantes',v:checkinStats.remaining,c:'text-blue-400'}].map(s=><div key={s.l} className="flex-1 bg-black/20 rounded-lg p-1 text-center"><p className={`text-[10px] font-black ${s.c}`}>{s.v}</p><p className="text-[6px] text-white/20 uppercase font-black">{s.l}</p></div>)}</div>}
                          <div className="flex flex-col gap-2 max-h-[55vh] overflow-y-auto pr-1 custom-scrollbar">
                            {memberCheckins.length > 0 ? memberCheckins.map((c:any, i:number)=>(
                              <div key={i} className="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/5 p-3 rounded-xl flex justify-between items-center">

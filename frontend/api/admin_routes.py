@@ -122,8 +122,33 @@ def update_member(member_id: int, member_data: schemas.MemberCreate, db: Session
 
 @router.get("/members/{member_id}/checkins")
 def get_member_checkins(member_id: int, db: Session = Depends(get_db)):
+    member = db.query(models.Member).filter(models.Member.id == member_id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+
+    plan = db.query(models.Plan).filter(models.Plan.name == member.membership_type, models.Plan.is_active == True).first()
+    days_per_week = plan.days_per_week if plan else 3
+    total_sessions = days_per_week * 4
+
+    today = datetime.datetime.utcnow()
+    if member.joined_at:
+        days_since = max(0, (today - member.joined_at).days)
+        cycle_start = member.joined_at + datetime.timedelta(days=(days_since // 30) * 30)
+    else:
+        cycle_start = today - datetime.timedelta(days=30)
+
+    sessions_used = db.query(models.Checkin).filter(
+        models.Checkin.member_id == member_id,
+        models.Checkin.checkin_at >= cycle_start
+    ).count()
+
     checkins = db.query(models.Checkin).filter(models.Checkin.member_id == member_id).order_by(models.Checkin.checkin_at.desc()).all()
-    return [{"id": c.id, "checkin_at": c.checkin_at.isoformat() + "Z"} for c in checkins]
+    return {
+        "total_sessions": total_sessions,
+        "sessions_used": sessions_used,
+        "sessions_remaining": max(0, total_sessions - sessions_used),
+        "checkins": [{"id": c.id, "checkin_at": c.checkin_at.isoformat() + "Z"} for c in checkins]
+    }
 
 @router.put("/members/{member_id}/status")
 def update_member_status(member_id: int, status: str, db: Session = Depends(get_db)):

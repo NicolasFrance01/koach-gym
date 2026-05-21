@@ -271,7 +271,16 @@ class GymDesktopKiosk:
                 days_since = max(0, (today - member.joined_at).days) if member.joined_at else 0
                 days_in_cycle = days_since % 30
                 days_left = 30 - days_in_cycle
-                plan_info = f"{member.membership_type or 'Plan'}\n{total_sessions} días disponibles\n{days_left}d restantes a renovar"
+
+                # Count sessions used in current cycle (including this check-in)
+                cycle_start = (member.joined_at + datetime.timedelta(days=(days_since // 30) * 30)) if member.joined_at else today
+                sessions_used = db.query(models.Checkin).filter(
+                    models.Checkin.member_id == member.id,
+                    models.Checkin.checkin_at >= cycle_start
+                ).count()
+                sessions_remaining = max(0, total_sessions - sessions_used)
+
+                plan_info = f"{member.membership_type or 'Plan'}\n{sessions_remaining} días disponibles\n{days_left}d restantes a renovar"
 
                 self.cv_engine.set_member_status(member.name, status)
                 self.root.after(0, lambda: self.render_status_result(member.name, status, dni, plan_info))
