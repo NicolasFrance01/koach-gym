@@ -31,7 +31,7 @@ def compute_status(member) -> str:
     if not member.joined_at:
         return member.status
     today = datetime.datetime.utcnow()
-    days_since = (today - member.joined_at).days
+    days_since = max(0, (today - member.joined_at).days)
     days_in_cycle = days_since % 30
     days_remaining = 30 - days_in_cycle
     if days_since > 0 and days_in_cycle == 0:
@@ -227,7 +227,7 @@ class GymDesktopKiosk:
         self.status_label = ctk.CTkLabel(self.status_box, text="ESPERANDO", font=ctk.CTkFont(size=28, weight="bold"), text_color="#444")
         self.status_label.pack(expand=True, pady=(0, 4))
 
-        self.plan_label = ctk.CTkLabel(self.status_box, text="", font=ctk.CTkFont(size=9), text_color="#333")
+        self.plan_label = ctk.CTkLabel(self.status_box, text="", font=ctk.CTkFont(size=10), text_color="#333", justify="center")
         self.plan_label.pack(pady=(0, 16))
 
         # Versioning
@@ -271,7 +271,7 @@ class GymDesktopKiosk:
                 days_since = max(0, (today - member.joined_at).days) if member.joined_at else 0
                 days_in_cycle = days_since % 30
                 days_left = 30 - days_in_cycle
-                plan_info = f"{member.membership_type or 'Plan'} · {total_sessions} ses/mes · {days_left}d restantes"
+                plan_info = f"{member.membership_type or 'Plan'}\n{total_sessions} días disponibles\n{days_left}d restantes a renovar"
 
                 self.cv_engine.set_member_status(member.name, status)
                 self.root.after(0, lambda: self.render_status_result(member.name, status, dni, plan_info))

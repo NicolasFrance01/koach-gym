@@ -559,7 +559,7 @@ export default function AdminDashboard() {
                              <div key={i} className="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/5 p-3 rounded-xl flex justify-between items-center">
                                <div className="flex items-center gap-2">
                                  <div className="w-6 h-6 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-400 text-[8px] font-black">{memberCheckins.length - i}</div>
-                                 <div><p className="font-black text-black dark:text-white text-[9px]">{c.checkin_at.split(' ')[0]}</p><p className="text-[7px] text-gray-500 dark:text-white/20 font-black">{c.checkin_at.split(' ')[1]}</p></div>
+                                 <div><p className="font-black text-black dark:text-white text-[9px]">{new Date(c.checkin_at).toLocaleDateString('es-AR')}</p><p className="text-[7px] text-gray-500 dark:text-white/20 font-black">{new Date(c.checkin_at).toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'})}</p></div>
                                </div>
                              </div>
                            )) : <p className="text-center text-gray-400 dark:text-white/10 uppercase font-black py-8 text-[8px]">Sin ingresos registrados</p>}
