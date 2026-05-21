@@ -23,6 +23,7 @@ class Member(Base):
     
     payments = relationship("Payment", back_populates="member")
     bookings = relationship("Booking", back_populates="member")
+    checkins = relationship("Checkin", back_populates="member")
 
 class Payment(Base):
     __tablename__ = "payments"
@@ -55,6 +56,13 @@ class Staff(Base):
     role = Column(String) # Trainer, Reception, Manager
     password = Column(String, default="1234")
     shift = Column(String, default="Mañana")
+
+class Checkin(Base):
+    __tablename__ = "checkins"
+    id = Column(Integer, primary_key=True, index=True)
+    member_id = Column(Integer, ForeignKey("members.id"))
+    checkin_at = Column(DateTime, default=datetime.datetime.utcnow)
+    member = relationship("Member", back_populates="checkins")
 
 class Product(Base):
     __tablename__ = "products"

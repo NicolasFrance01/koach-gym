@@ -73,6 +73,8 @@ def create_member(member: schemas.MemberCreate, db: Session = Depends(get_db)):
         data['email'] = None
     if not data.get('phone'):
         data['phone'] = None
+    if not data.get('joined_at'):
+        data['joined_at'] = datetime.datetime.utcnow()
     db_member = models.Member(**data)
     db.add(db_member)
     try:
@@ -96,12 +98,19 @@ def update_member(member_id: int, member_data: schemas.MemberCreate, db: Session
         data['email'] = None
     if not data.get('phone'):
         data['phone'] = None
+    if not data.get('joined_at'):
+        data['joined_at'] = db_member.joined_at  # keep existing if not provided
     for key, value in data.items():
         setattr(db_member, key, value)
 
     db.commit()
     db.refresh(db_member)
     return db_member
+
+@router.get("/members/{member_id}/checkins")
+def get_member_checkins(member_id: int, db: Session = Depends(get_db)):
+    checkins = db.query(models.Checkin).filter(models.Checkin.member_id == member_id).order_by(models.Checkin.checkin_at.desc()).all()
+    return [{"id": c.id, "checkin_at": c.checkin_at.strftime("%Y-%m-%d %H:%M")} for c in checkins]
 
 @router.put("/members/{member_id}/status")
 def update_member_status(member_id: int, status: str, db: Session = Depends(get_db)):

@@ -32,6 +32,7 @@ export default function AdminDashboard() {
   const [modalType, setModalType] = useState<'member' | 'staff' | 'workout' | 'plan' | 'history'>('member');
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [memberCheckins, setMemberCheckins] = useState<any[]>([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
@@ -454,7 +455,7 @@ export default function AdminDashboard() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'Socios': return <MembersModule members={members} searchQuery={searchQuery} setSearchQuery={setSearchQuery} onHistory={(m:any)=>{setSelectedItem(m); setModalType('history'); setIsModalOpen(true);}} onEdit={(m: any) => { const validPlan = plans.find((p:any) => p.name === m.membership_type)?.name || plans[0]?.name || ''; setSelectedItem({...m, membership_type: validPlan}); setIsEditMode(true); setModalType('member'); setIsModalOpen(true); }} onDelete={async (id: any) => { if(confirm("¿Dar de baja socio?")){ const res = await fetch(`${API_URL}/admin/members/${id}`, {method:'DELETE'}); if(res.ok) refreshData(); } }} onAddClick={() => { setSelectedItem({name:'', dni:'', phone:'', email:'', password:'1234', status:'ACTIVO', membership_type: plans[0]?.name || ''}); setIsEditMode(false); setModalType('member'); setIsModalOpen(true); }} onPayClick={(m: any) => { setSelectedItem(m); setIsPaymentModalOpen(true); }} />;
+      case 'Socios': return <MembersModule members={members} searchQuery={searchQuery} setSearchQuery={setSearchQuery} onHistory={(m:any)=>{ setSelectedItem(m); setMemberCheckins([]); setModalType('history'); setIsModalOpen(true); fetch(`${API_URL}/admin/members/${m.id}/checkins`).then(r=>r.json()).then(data=>setMemberCheckins(Array.isArray(data)?data:[])).catch(()=>{}); }} onEdit={(m: any) => { const validPlan = plans.find((p:any) => p.name === m.membership_type)?.name || plans[0]?.name || ''; setSelectedItem({...m, membership_type: validPlan}); setIsEditMode(true); setModalType('member'); setIsModalOpen(true); }} onDelete={async (id: any) => { if(confirm("¿Dar de baja socio?")){ const res = await fetch(`${API_URL}/admin/members/${id}`, {method:'DELETE'}); if(res.ok) refreshData(); } }} onAddClick={() => { setSelectedItem({name:'', dni:'', phone:'', email:'', password:'1234', status:'ACTIVO', membership_type: plans[0]?.name || ''}); setIsEditMode(false); setModalType('member'); setIsModalOpen(true); }} onPayClick={(m: any) => { setSelectedItem(m); setIsPaymentModalOpen(true); }} />;
       case 'Planes': return <PlansModule plans={plans} onEdit={(p:any)=>{setSelectedItem(p); setIsEditMode(true); setModalType('plan'); setIsModalOpen(true);}} onDelete={async (id:any)=>{ if(!confirm('¿Eliminar plan?')) return; const res = await fetch(`${API_URL}/admin/plans/${id}`,{method:'DELETE'}); if(res.ok) refreshData(); }} onAddClick={()=>{setSelectedItem({name:'', price:0, daysPerWeek:3, classes:[]}); setIsEditMode(false); setModalType('plan'); setIsModalOpen(true);}} />;
       case 'Mi Perfil': return <ProfileModule user={loggedUser} onSave={async (newPassword: string) => {
         if (!newPassword) { alert('Ingresá una nueva contraseña'); return; }
@@ -536,20 +537,34 @@ export default function AdminDashboard() {
               <div className="space-y-3">
                 {modalType === 'history' && (
                   <div className="space-y-4">
-                     <h3 className="text-xs font-black uppercase text-gray-600 dark:text-white/40 mb-4">Historial de Pagos y Planes: {selectedItem.name}</h3>
-                     <div className="grid grid-cols-1 gap-2 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                        {selectedItem.billing_history?.length > 0 ? selectedItem.billing_history.map((h:any, i:number)=>(
-                          <div key={i} className="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/5 p-4 rounded-2xl flex justify-between items-center">
-                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500"><Receipt size={18}/></div>
-                                <div><p className="font-black text-black dark:text-white uppercase text-[10px]">{h.plan}</p><p className="text-[8px] text-gray-500 dark:text-white/20 uppercase font-black">{h.date} • {h.method}</p></div>
+                     <h3 className="text-xs font-black uppercase text-gray-600 dark:text-white/40">Historial: {selectedItem.name}</h3>
+                     <div className="grid grid-cols-2 gap-4">
+                       {/* Pagos */}
+                       <div>
+                         <p className="text-[8px] font-black uppercase text-orange-500 mb-2 tracking-widest">Pagos y Planes</p>
+                         <div className="flex flex-col gap-2 max-h-[55vh] overflow-y-auto pr-1 custom-scrollbar">
+                           {selectedItem.billing_history?.length > 0 ? selectedItem.billing_history.map((h:any, i:number)=>(
+                             <div key={i} className="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/5 p-3 rounded-xl flex justify-between items-center">
+                               <div><p className="font-black text-black dark:text-white uppercase text-[9px]">{h.plan}</p><p className="text-[7px] text-gray-500 dark:text-white/20 font-black">{h.date} · {h.method}</p></div>
+                               <p className="text-sm font-black text-green-500">${h.amount?.toLocaleString()}</p>
                              </div>
-                             <div className="text-right">
-                                <p className="text-sm font-black text-green-500">${h.amount.toLocaleString()}</p>
-                                <p className="text-[8px] font-black uppercase text-gray-500 dark:text-white/20">{h.status}</p>
+                           )) : <p className="text-center text-gray-400 dark:text-white/10 uppercase font-black py-8 text-[8px]">Sin cobros</p>}
+                         </div>
+                       </div>
+                       {/* Asistencia */}
+                       <div>
+                         <p className="text-[8px] font-black uppercase text-blue-400 mb-2 tracking-widest">Asistencia · {memberCheckins.length} ingresos</p>
+                         <div className="flex flex-col gap-2 max-h-[55vh] overflow-y-auto pr-1 custom-scrollbar">
+                           {memberCheckins.length > 0 ? memberCheckins.map((c:any, i:number)=>(
+                             <div key={i} className="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/5 p-3 rounded-xl flex justify-between items-center">
+                               <div className="flex items-center gap-2">
+                                 <div className="w-6 h-6 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-400 text-[8px] font-black">{memberCheckins.length - i}</div>
+                                 <div><p className="font-black text-black dark:text-white text-[9px]">{c.checkin_at.split(' ')[0]}</p><p className="text-[7px] text-gray-500 dark:text-white/20 font-black">{c.checkin_at.split(' ')[1]}</p></div>
+                               </div>
                              </div>
-                          </div>
-                        )) : <p className="text-center text-white/10 uppercase font-black py-10">Sin historial registrado</p>}
+                           )) : <p className="text-center text-gray-400 dark:text-white/10 uppercase font-black py-8 text-[8px]">Sin ingresos registrados</p>}
+                         </div>
+                       </div>
                      </div>
                   </div>
                 )}
@@ -566,6 +581,10 @@ export default function AdminDashboard() {
                     <select className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl p-3 text-black dark:text-white text-xs" value={selectedItem?.membership_type || plans[0]?.name || ''} onChange={e => setSelectedItem({...selectedItem, membership_type: e.target.value})}>
                        {plans.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
                     </select>
+                    <div className="space-y-1">
+                      <label className="text-[8px] text-gray-500 dark:text-white/20 uppercase font-black ml-2">Fecha de Inicio del Plan</label>
+                      <input type="date" className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl p-3 text-black dark:text-white text-xs" value={selectedItem?.joined_at ? selectedItem.joined_at.split('T')[0] : ''} onChange={e => setSelectedItem({...selectedItem, joined_at: e.target.value ? e.target.value + 'T00:00:00' : null})} />
+                    </div>
                     <div className="space-y-1">
                       <label className="text-[8px] text-gray-500 dark:text-white/20 uppercase font-black ml-2">Contraseña de Acceso</label>
                       <input type="text" placeholder="Asignar Contraseña" className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl p-3 text-black dark:text-white text-xs" value={selectedItem?.password || ''} onChange={e => setSelectedItem({...selectedItem, password: e.target.value})} />

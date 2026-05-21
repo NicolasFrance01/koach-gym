@@ -49,6 +49,7 @@ class MemberCreate(BaseModel):
     phone: Optional[str] = None
     password: Optional[str] = "123"
     membership_type: Optional[str] = None
+    joined_at: Optional[datetime] = None
 
 class MemberSchema(MemberBase):
     id: int
@@ -98,6 +99,13 @@ class PlanCreate(PlanBase):
 
 class PlanSchema(PlanBase):
     id: int
+    class Config:
+        from_attributes = True
+
+class CheckinSchema(BaseModel):
+    id: int
+    member_id: int
+    checkin_at: datetime
     class Config:
         from_attributes = True
 

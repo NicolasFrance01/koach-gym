@@ -14,7 +14,7 @@ class MemberBase(BaseModel):
     wellness_data: Optional[Dict] = None
 
 class MemberCreate(MemberBase):
-    pass
+    joined_at: Optional[datetime] = None
 
 class MemberSchema(MemberBase):
     id: int
@@ -40,6 +40,13 @@ class BookingSchema(BaseModel):
     start_time: datetime
     status: str
 
+    class Config:
+        from_attributes = True
+
+class CheckinSchema(BaseModel):
+    id: int
+    member_id: int
+    checkin_at: datetime
     class Config:
         from_attributes = True
 

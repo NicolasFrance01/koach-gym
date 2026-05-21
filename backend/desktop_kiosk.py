@@ -225,7 +225,10 @@ class GymDesktopKiosk:
         self.dni_label.pack(pady=(0, 10))
 
         self.status_label = ctk.CTkLabel(self.status_box, text="ESPERANDO", font=ctk.CTkFont(size=28, weight="bold"), text_color="#444")
-        self.status_label.pack(expand=True, pady=(0, 20))
+        self.status_label.pack(expand=True, pady=(0, 4))
+
+        self.plan_label = ctk.CTkLabel(self.status_box, text="", font=ctk.CTkFont(size=9), text_color="#333")
+        self.plan_label.pack(pady=(0, 16))
 
         # Versioning
         ctk.CTkLabel(self.sidebar, text="Fusion Fitness v2.6 | SYNC: ONLINE", font=ctk.CTkFont(size=9), text_color="#1a1a1a").pack(side="bottom", pady=20)
@@ -252,23 +255,40 @@ class GymDesktopKiosk:
                 status = compute_status(member)
                 if status != member.status:
                     member.status = status
-                    db.commit()
+
+                # Record check-in
+                member.last_checkin = datetime.datetime.utcnow()
+                checkin = models.Checkin(member_id=member.id, checkin_at=datetime.datetime.utcnow())
+                db.add(checkin)
+                db.commit()
+
+                # Calculate plan info
+                plan = db.query(models.Plan).filter(models.Plan.name == member.membership_type, models.Plan.is_active == True).first()
+                days_per_week = plan.days_per_week if plan else 3
+                total_sessions = days_per_week * 4
+
+                today = datetime.datetime.utcnow()
+                days_since = max(0, (today - member.joined_at).days) if member.joined_at else 0
+                days_in_cycle = days_since % 30
+                days_left = 30 - days_in_cycle
+                plan_info = f"{member.membership_type or 'Plan'} · {total_sessions} ses/mes · {days_left}d restantes"
+
                 self.cv_engine.set_member_status(member.name, status)
-                self.root.after(0, lambda: self.render_status_result(member.name, status, dni))
+                self.root.after(0, lambda: self.render_status_result(member.name, status, dni, plan_info))
             else:
-                self.root.after(0, lambda: self.render_status_result("ERROR", "NO EXISTE", dni))
-        except Exception:
-            self.root.after(0, lambda: self.render_status_result("ERROR", "DB ERROR", dni))
+                self.root.after(0, lambda: self.render_status_result("ERROR", "NO EXISTE", dni, ""))
+        except Exception as e:
+            print(f"Verification error: {e}")
+            self.root.after(0, lambda: self.render_status_result("ERROR", "DB ERROR", dni, ""))
         finally:
             db.close()
 
-    def render_status_result(self, name, status, dni):
-        # Hide Keypad for 7s
+    def render_status_result(self, name, status, dni, plan_info=""):
         self.input_container.pack_forget()
 
-        color = "#ff3333" # Default error
+        color = "#ff3333"
         bg = "#1a0000"
-        
+
         if status == "ACTIVO" or status == "AL DIA":
             color = "#00ff99"
             bg = "#001a0f"
@@ -287,6 +307,7 @@ class GymDesktopKiosk:
         self.indicator.configure(text_color=color)
         self.name_label.configure(text=name, text_color=color)
         self.dni_label.configure(text=f"DNI: {dni}", text_color=color)
+        self.plan_label.configure(text=plan_info, text_color=color)
         
         # Reset after 7s
         self.root.after(7000, self.return_to_idle)
@@ -307,6 +328,7 @@ class GymDesktopKiosk:
         self.indicator.configure(text_color="#222")
         self.name_label.configure(text="BIENVENIDO", text_color="#111")
         self.dni_label.configure(text="DNI: ---", text_color="#222")
+        self.plan_label.configure(text="", text_color="#333")
         self.cv_engine.set_member_status("", "IDLE")
 
     def update_video_loop(self):
