@@ -75,6 +75,7 @@ def create_member(member: schemas.MemberCreate, db: Session = Depends(get_db)):
         data['phone'] = None
     if not data.get('joined_at'):
         data['joined_at'] = datetime.datetime.utcnow()
+    data['status'] = 'ACTIVO'  # new members always start active
     db_member = models.Member(**data)
     db.add(db_member)
     try:
@@ -99,7 +100,19 @@ def update_member(member_id: int, member_data: schemas.MemberCreate, db: Session
     if not data.get('phone'):
         data['phone'] = None
     if not data.get('joined_at'):
-        data['joined_at'] = db_member.joined_at  # keep existing if not provided
+        data['joined_at'] = db_member.joined_at
+    # Recalculate status from joined_at so editing the start date reflects correctly
+    joined = data['joined_at']
+    if joined and data.get('status') != 'INACTIVO':
+        days_since = max(0, (datetime.datetime.utcnow() - joined).days)
+        days_in_cycle = days_since % 30
+        days_remaining = 30 - days_in_cycle
+        if days_since > 0 and days_in_cycle == 0:
+            data['status'] = 'DEUDA'
+        elif days_remaining <= 7:
+            data['status'] = 'POR VENCER'
+        else:
+            data['status'] = 'ACTIVO'
     for key, value in data.items():
         setattr(db_member, key, value)
 
