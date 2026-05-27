@@ -189,7 +189,29 @@ export default function AdminDashboard() {
       ]);
       if (!membersRes.ok) throw new Error(`Error ${membersRes.status}: No se pudo obtener la lista de socios`);
       const membersData = await membersRes.json();
-      setMembers(membersData);
+      const updatedMembers = await Promise.all(membersData.map(async (m: any) => {
+        if (m.joined_at && m.last_checkin) {
+          const joined = new Date(m.joined_at);
+          const today = new Date();
+          if (joined.getTime() > today.getTime()) {
+            try {
+              const res = await fetch(`${API_URL}/admin/members/${m.id}/checkins`);
+              if (res.ok) {
+                const checkins = await res.json();
+                const checkinsList = Array.isArray(checkins) ? checkins : (checkins.checkins || []);
+                if (checkinsList.length > 0) {
+                  const earliest = checkinsList[checkinsList.length - 1].checkin_at;
+                  return { ...m, effective_joined_at: earliest };
+                }
+              }
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }
+        return m;
+      }));
+      setMembers(updatedMembers);
       if (plansRes.ok) {
         const plansData = await plansRes.json();
         setPlans(plansData.map((p: any) => ({ ...p, daysPerWeek: p.days_per_week })));
@@ -456,7 +478,7 @@ export default function AdminDashboard() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'Socios': return <MembersModule members={members} searchQuery={searchQuery} setSearchQuery={setSearchQuery} onHistory={(m:any)=>{ setSelectedItem(m); setMemberCheckins([]); setCheckinStats(null); setModalType('history'); setIsModalOpen(true); fetch(`${API_URL}/admin/members/${m.id}/checkins`).then(r=>r.json()).then(data=>{ const checkinsList = Array.isArray(data) ? data : (data.checkins || []); const planName = m.membership_type || 'Básico'; const plan = plans.find((p:any) => p.name === planName); const daysPerWeek = plan ? (plan.daysPerWeek ?? plan.days_per_week ?? 3) : 3; const totalSessions = daysPerWeek * 4; const today = new Date(); let cycleStart = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000); if(m.joined_at){ const joined = new Date(m.joined_at); const diffTime = today.getTime() - joined.getTime(); const cycleIndex = Math.floor(diffTime / (30 * 24 * 60 * 60 * 1000)); cycleStart = new Date(joined.getTime() + (cycleIndex * 30 * 24 * 60 * 60 * 1000)); } const sessionsUsed = checkinsList.filter((c:any) => { const checkinDate = new Date(c.checkin_at.replace(' ', 'T')); return checkinDate >= cycleStart; }).length; const sessionsRemaining = Math.max(0, totalSessions - sessionsUsed); setMemberCheckins(checkinsList); setCheckinStats({ total: totalSessions, used: sessionsUsed, remaining: sessionsRemaining }); }).catch(()=>{}); }} onEdit={(m: any) => { const validPlan = plans.find((p:any) => p.name === m.membership_type)?.name || plans[0]?.name || ''; setSelectedItem({...m, membership_type: validPlan}); setIsEditMode(true); setModalType('member'); setIsModalOpen(true); }} onDelete={async (id: any) => { if(confirm("¿Dar de baja socio?")){ const res = await fetch(`${API_URL}/admin/members/${id}`, {method:'DELETE'}); if(res.ok) refreshData(); } }} onAddClick={() => { setSelectedItem({name:'', dni:'', phone:'', email:'', password:'1234', status:'ACTIVO', membership_type: plans[0]?.name || ''}); setIsEditMode(false); setModalType('member'); setIsModalOpen(true); }} onPayClick={(m: any) => { setSelectedItem(m); setIsPaymentModalOpen(true); }} />;
+      case 'Socios': return <MembersModule members={members} searchQuery={searchQuery} setSearchQuery={setSearchQuery} onHistory={(m:any)=>{ setSelectedItem(m); setMemberCheckins([]); setCheckinStats(null); setModalType('history'); setIsModalOpen(true); fetch(`${API_URL}/admin/members/${m.id}/checkins`).then(r=>r.json()).then(data=>{ const checkinsList = Array.isArray(data) ? data : (data.checkins || []); const planName = m.membership_type || 'Básico'; const plan = plans.find((p:any) => p.name === planName); const daysPerWeek = plan ? (plan.daysPerWeek ?? plan.days_per_week ?? 3) : 3; const totalSessions = daysPerWeek * 4; const today = new Date(); let cycleStart = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000); const joinedStr = m.effective_joined_at || m.joined_at; if(joinedStr){ const joined = new Date(joinedStr); const d1 = new Date(joined.getFullYear(), joined.getMonth(), joined.getDate()); const d2 = new Date(today.getFullYear(), today.getMonth(), today.getDate()); const totalDaysSinceJoined = Math.round((d2.getTime() - d1.getTime()) / 86400000); if(totalDaysSinceJoined >= 0){ const daysIn = totalDaysSinceJoined % 30; cycleStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysIn); } } const sessionsUsed = checkinsList.filter((c:any) => { const checkinDate = new Date(c.checkin_at.replace(' ', 'T')); return checkinDate >= cycleStart; }).length; const sessionsRemaining = Math.max(0, totalSessions - sessionsUsed); setMemberCheckins(checkinsList); setCheckinStats({ total: totalSessions, used: sessionsUsed, remaining: sessionsRemaining }); }).catch(()=>{}); }} onEdit={(m: any) => { const validPlan = plans.find((p:any) => p.name === m.membership_type)?.name || plans[0]?.name || ''; setSelectedItem({...m, membership_type: validPlan}); setIsEditMode(true); setModalType('member'); setIsModalOpen(true); }} onDelete={async (id: any) => { if(confirm("¿Dar de baja socio?")){ const res = await fetch(`${API_URL}/admin/members/${id}`, {method:'DELETE'}); if(res.ok) refreshData(); } }} onAddClick={() => { setSelectedItem({name:'', dni:'', phone:'', email:'', password:'1234', status:'ACTIVO', membership_type: plans[0]?.name || ''}); setIsEditMode(false); setModalType('member'); setIsModalOpen(true); }} onPayClick={(m: any) => { setSelectedItem(m); setIsPaymentModalOpen(true); }} />;
       case 'Planes': return <PlansModule plans={plans} onEdit={(p:any)=>{setSelectedItem(p); setIsEditMode(true); setModalType('plan'); setIsModalOpen(true);}} onDelete={async (id:any)=>{ if(!confirm('¿Eliminar plan?')) return; const res = await fetch(`${API_URL}/admin/plans/${id}`,{method:'DELETE'}); if(res.ok) refreshData(); }} onAddClick={()=>{setSelectedItem({name:'', price:0, daysPerWeek:3, classes:[]}); setIsEditMode(false); setModalType('plan'); setIsModalOpen(true);}} />;
       case 'Mi Perfil': return <ProfileModule user={loggedUser} onSave={async (newPassword: string) => {
         if (!newPassword) { alert('Ingresá una nueva contraseña'); return; }
@@ -851,20 +873,24 @@ function memberDaysInfo(joinedAt: string, status: string): { daysIn: number; day
   const joined = new Date(joinedAt);
   const today = new Date();
   
-  const diffTime = today.getTime() - joined.getTime();
-  const cycleIndex = Math.floor(diffTime / (30 * 24 * 60 * 60 * 1000));
-  const cycleStart = new Date(joined.getTime() + cycleIndex * 30 * 24 * 60 * 60 * 1000);
+  // Set time of both dates to 00:00:00 to calculate calendar days exactly
+  const d1 = new Date(joined.getFullYear(), joined.getMonth(), joined.getDate());
+  const d2 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   
-  const daysSince = Math.floor((today.getTime() - cycleStart.getTime()) / 86400000);
-  const daysIn = daysSince % 30;
-  const daysLeft = 30 - daysIn;
+  const totalDaysSinceJoined = Math.round((d2.getTime() - d1.getTime()) / 86400000);
+  
+  if (totalDaysSinceJoined < 0) {
+    return { daysIn: 0, daysLeft: 30, overdueDays: 0 };
+  }
   
   if (status === 'DEUDA') {
-    const totalDaysSinceJoined = Math.max(0, Math.floor((today.getTime() - joined.getTime()) / 86400000));
     const lastCycleEnd = Math.floor(totalDaysSinceJoined / 30) * 30;
     const overdueDays = totalDaysSinceJoined - lastCycleEnd;
     return { daysIn: 30, daysLeft: 0, overdueDays };
   }
+  
+  const daysIn = totalDaysSinceJoined % 30;
+  const daysLeft = 30 - daysIn;
   return { daysIn, daysLeft, overdueDays: 0 };
 }
 
@@ -917,7 +943,7 @@ function MembersModule({ members, onEdit, onDelete, onAddClick, onPayClick, onHi
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         {filteredMembers.map((m: any) => {
-          const { daysIn, daysLeft } = memberDaysInfo(m.joined_at, m.status);
+          const { daysIn, daysLeft } = memberDaysInfo(m.effective_joined_at || m.joined_at, m.status);
           return (
             <div key={m.id} className="p-4 bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/5 hover:border-orange-500/10 transition-all group overflow-hidden">
               <div className="flex items-start justify-between mb-2">
