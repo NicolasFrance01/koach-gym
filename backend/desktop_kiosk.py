@@ -257,8 +257,11 @@ class GymDesktopKiosk:
                     member.status = status
 
                 # Record check-in
-                member.last_checkin = datetime.datetime.utcnow()
-                checkin = models.Checkin(member_id=member.id, checkin_at=datetime.datetime.utcnow())
+                now_time = datetime.datetime.utcnow()
+                member.last_checkin = now_time
+                if member.joined_at and member.joined_at > now_time:
+                    member.joined_at = now_time
+                checkin = models.Checkin(member_id=member.id, checkin_at=now_time)
                 db.add(checkin)
                 db.commit()
 
