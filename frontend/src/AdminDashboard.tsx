@@ -456,7 +456,7 @@ export default function AdminDashboard() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'Socios': return <MembersModule members={members} searchQuery={searchQuery} setSearchQuery={setSearchQuery} onHistory={(m:any)=>{ setSelectedItem(m); setMemberCheckins([]); setCheckinStats(null); setModalType('history'); setIsModalOpen(true); fetch(`${API_URL}/admin/members/${m.id}/checkins`).then(r=>r.json()).then(data=>{ const checkinsList = Array.isArray(data) ? data : (data.checkins || []); const planName = m.membership_type || 'Básico'; const plan = plans.find((p:any) => p.name === planName); const daysPerWeek = plan ? (plan.daysPerWeek ?? plan.days_per_week ?? 3) : 3; const totalSessions = daysPerWeek * 4; const today = new Date(); let cycleStart = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000); if(m.joined_at){ const joined = new Date(m.joined_at); const daysSince = Math.max(0, Math.floor((today.getTime() - joined.getTime()) / 86400000)); const cycleStartDays = Math.floor(daysSince / 30) * 30; cycleStart = new Date(joined.getTime() + (cycleStartDays * 24 * 60 * 60 * 1000)); } const sessionsUsed = checkinsList.filter((c:any) => { const checkinDate = new Date(c.checkin_at.replace(' ', 'T')); return checkinDate >= cycleStart; }).length; const sessionsRemaining = Math.max(0, totalSessions - sessionsUsed); setMemberCheckins(checkinsList); setCheckinStats({ total: totalSessions, used: sessionsUsed, remaining: sessionsRemaining }); }).catch(()=>{}); }} onEdit={(m: any) => { const validPlan = plans.find((p:any) => p.name === m.membership_type)?.name || plans[0]?.name || ''; setSelectedItem({...m, membership_type: validPlan}); setIsEditMode(true); setModalType('member'); setIsModalOpen(true); }} onDelete={async (id: any) => { if(confirm("¿Dar de baja socio?")){ const res = await fetch(`${API_URL}/admin/members/${id}`, {method:'DELETE'}); if(res.ok) refreshData(); } }} onAddClick={() => { setSelectedItem({name:'', dni:'', phone:'', email:'', password:'1234', status:'ACTIVO', membership_type: plans[0]?.name || ''}); setIsEditMode(false); setModalType('member'); setIsModalOpen(true); }} onPayClick={(m: any) => { setSelectedItem(m); setIsPaymentModalOpen(true); }} />;
+      case 'Socios': return <MembersModule members={members} searchQuery={searchQuery} setSearchQuery={setSearchQuery} onHistory={(m:any)=>{ setSelectedItem(m); setMemberCheckins([]); setCheckinStats(null); setModalType('history'); setIsModalOpen(true); fetch(`${API_URL}/admin/members/${m.id}/checkins`).then(r=>r.json()).then(data=>{ const checkinsList = Array.isArray(data) ? data : (data.checkins || []); const planName = m.membership_type || 'Básico'; const plan = plans.find((p:any) => p.name === planName); const daysPerWeek = plan ? (plan.daysPerWeek ?? plan.days_per_week ?? 3) : 3; const totalSessions = daysPerWeek * 4; const today = new Date(); let cycleStart = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000); if(m.joined_at){ const joined = new Date(m.joined_at); const diffTime = today.getTime() - joined.getTime(); const cycleIndex = Math.floor(diffTime / (30 * 24 * 60 * 60 * 1000)); cycleStart = new Date(joined.getTime() + (cycleIndex * 30 * 24 * 60 * 60 * 1000)); } const sessionsUsed = checkinsList.filter((c:any) => { const checkinDate = new Date(c.checkin_at.replace(' ', 'T')); return checkinDate >= cycleStart; }).length; const sessionsRemaining = Math.max(0, totalSessions - sessionsUsed); setMemberCheckins(checkinsList); setCheckinStats({ total: totalSessions, used: sessionsUsed, remaining: sessionsRemaining }); }).catch(()=>{}); }} onEdit={(m: any) => { const validPlan = plans.find((p:any) => p.name === m.membership_type)?.name || plans[0]?.name || ''; setSelectedItem({...m, membership_type: validPlan}); setIsEditMode(true); setModalType('member'); setIsModalOpen(true); }} onDelete={async (id: any) => { if(confirm("¿Dar de baja socio?")){ const res = await fetch(`${API_URL}/admin/members/${id}`, {method:'DELETE'}); if(res.ok) refreshData(); } }} onAddClick={() => { setSelectedItem({name:'', dni:'', phone:'', email:'', password:'1234', status:'ACTIVO', membership_type: plans[0]?.name || ''}); setIsEditMode(false); setModalType('member'); setIsModalOpen(true); }} onPayClick={(m: any) => { setSelectedItem(m); setIsPaymentModalOpen(true); }} />;
       case 'Planes': return <PlansModule plans={plans} onEdit={(p:any)=>{setSelectedItem(p); setIsEditMode(true); setModalType('plan'); setIsModalOpen(true);}} onDelete={async (id:any)=>{ if(!confirm('¿Eliminar plan?')) return; const res = await fetch(`${API_URL}/admin/plans/${id}`,{method:'DELETE'}); if(res.ok) refreshData(); }} onAddClick={()=>{setSelectedItem({name:'', price:0, daysPerWeek:3, classes:[]}); setIsEditMode(false); setModalType('plan'); setIsModalOpen(true);}} />;
       case 'Mi Perfil': return <ProfileModule user={loggedUser} onSave={async (newPassword: string) => {
         if (!newPassword) { alert('Ingresá una nueva contraseña'); return; }
@@ -850,14 +850,21 @@ function memberDaysInfo(joinedAt: string, status: string): { daysIn: number; day
   if (!joinedAt) return { daysIn: 0, daysLeft: 30, overdueDays: 0 };
   const joined = new Date(joinedAt);
   const today = new Date();
-  const daysSince = Math.max(0, Math.floor((today.getTime() - joined.getTime()) / 86400000));
-  if (status === 'DEUDA') {
-    const lastCycleEnd = Math.floor(daysSince / 30) * 30;
-    const overdueDays = daysSince - lastCycleEnd;
-    return { daysIn: 30, daysLeft: 0, overdueDays };
-  }
+  
+  const diffTime = today.getTime() - joined.getTime();
+  const cycleIndex = Math.floor(diffTime / (30 * 24 * 60 * 60 * 1000));
+  const cycleStart = new Date(joined.getTime() + cycleIndex * 30 * 24 * 60 * 60 * 1000);
+  
+  const daysSince = Math.floor((today.getTime() - cycleStart.getTime()) / 86400000);
   const daysIn = daysSince % 30;
   const daysLeft = 30 - daysIn;
+  
+  if (status === 'DEUDA') {
+    const totalDaysSinceJoined = Math.max(0, Math.floor((today.getTime() - joined.getTime()) / 86400000));
+    const lastCycleEnd = Math.floor(totalDaysSinceJoined / 30) * 30;
+    const overdueDays = totalDaysSinceJoined - lastCycleEnd;
+    return { daysIn: 30, daysLeft: 0, overdueDays };
+  }
   return { daysIn, daysLeft, overdueDays: 0 };
 }
 
