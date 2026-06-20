@@ -542,6 +542,14 @@ export default function AdminDashboard() {
               </label>
             </div>
 
+            {/* License expired notice on login */}
+            <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-700/60 rounded-xl animate-in fade-in duration-500">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+              <p className="text-[8px] font-black uppercase leading-relaxed text-red-700 dark:text-red-400">
+                Suscripción de Licencia en Atlascore <span className="text-red-600 dark:text-red-300">VENCIDA</span> — Comunicarse con Atlascore
+              </p>
+            </div>
+
             <button type="submit" className="w-full py-4 bg-orange-500 rounded-2xl font-black text-black dark:text-white text-xs uppercase tracking-widest transition-all hover:bg-orange-600 shadow-xl shadow-orange-500/20">Ingresar</button>
           </form>
         </div>
@@ -686,6 +694,14 @@ export default function AdminDashboard() {
             {isDarkMode ? <Sun size={12}/> : <Moon size={12}/>}
             <span className="text-[9px] font-black uppercase tracking-widest">{isDarkMode ? 'Claro' : 'Oscuro'}</span>
           </button>
+
+          {/* License expired banner — sidebar */}
+          <div className="flex items-start gap-1.5 p-2 bg-red-50 dark:bg-red-950/50 border border-red-300 dark:border-red-700/70 rounded-xl mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            <p className="text-[7px] font-black uppercase leading-snug text-red-700 dark:text-red-400">
+              Suscripción de Licencia en Atlascore <span className="text-red-600 dark:text-red-300">VENCIDA</span> — Comunicarse con Atlascore
+            </p>
+          </div>
         </div>
         <nav className="space-y-1 flex-1 overflow-y-auto custom-scrollbar pr-1">
           <SidebarItem icon={<LayoutDashboard size={14} />} label="Resumen" active={activeTab === 'Resumen'} onClick={() => setActiveTab('Resumen')} />
@@ -711,8 +727,17 @@ export default function AdminDashboard() {
       </aside>
 
       <main className="flex-1 overflow-y-auto p-6 relative bg-gray-100 dark:bg-[#050505]">
-        <header className="flex items-center justify-between mb-8 max-w-full">
+        <header className="flex items-center justify-between mb-8 max-w-full gap-4">
           <div className="min-w-0"><h2 className="text-xl font-black text-black dark:text-white tracking-tighter uppercase truncate">{activeTab}</h2><p className="text-[7px] text-gray-500 dark:text-white/20 uppercase font-black tracking-[0.3em]">Fusion Fitness GYM</p></div>
+
+          {/* License expired banner — header */}
+          <div className="flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-950/50 border border-red-300 dark:border-red-700/70 rounded-xl flex-1 max-w-xs animate-in fade-in duration-700">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-red-600 dark:text-red-400 flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            <p className="text-[7px] font-black uppercase leading-snug text-red-700 dark:text-red-400">
+              Suscripción de Licencia en Atlascore <span className="text-red-600 dark:text-red-300">VENCIDA</span> — Comunicarse con Atlascore
+            </p>
+          </div>
+
           <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 bg-orange-500 rounded-xl shadow-lg shadow-orange-500/20 font-black text-[8px] uppercase tracking-widest hover:scale-105 transition-all whitespace-nowrap"><Download size={14}/> Reporte Global</button>
         </header>
         <div className="max-w-full overflow-x-hidden">
