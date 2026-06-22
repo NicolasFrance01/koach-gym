@@ -51,7 +51,7 @@ export default function AdminDashboard() {
       // Load Images
       const [watermarkImg, logoImg] = await Promise.all([
         loadImage("/favicon.png"),
-        loadImage("/logo_B.png")
+        loadImage("/logo_dark.png")
       ]);
 
       // Background Watermark (Favicon)
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
     // Header & Title
     doc.setFontSize(16); doc.setFont("helvetica", "bold");
     doc.text("TÉRMINOS Y CONDICIONES DE USO", 50, 22);
-    doc.setFontSize(11); doc.text("GYM Manager — Atlascore IT Services S.A.S.", 50, 30);
+    doc.setFontSize(11);    doc.text("Koach Gym — Atlascore IT Services S.A.S.", 50, 30);
     doc.setFontSize(8); doc.setFont("helvetica", "normal");
     doc.text("Versión: 2.0", 160, 15); doc.text("Fecha: 01/05/2026", 160, 20);
     doc.line(10, 38, 200, 38);
@@ -113,16 +113,16 @@ export default function AdminDashboard() {
 
     // Set Metadata for specific filename on download
     doc.setProperties({
-      title: "FusionFitnessGYM_Terminos_Y_Condiciones",
+      title: "KoachGym_Terminos_Y_Condiciones",
       subject: "Términos y Condiciones de Uso",
-      author: "Fusion Fitness GYM"
+      author: "Koach Gym"
     });
 
     // Open in new tab using Blob URL
     const blob = doc.output('blob');
     const url = URL.createObjectURL(blob);
     const win = window.open(url, '_blank');
-    if (win) win.document.title = "Fusion Fitness GYM - Términos y Condiciones";
+    if (win) win.document.title = "Koach Gym - Términos y Condiciones";
   };
 
   useEffect(() => { if (isAuthenticated) refreshData(); }, [isAuthenticated, startDate, endDate]);
@@ -405,8 +405,8 @@ export default function AdminDashboard() {
     }
 
     doc.setFontSize(22);
-    doc.setTextColor(249, 115, 22);
-    doc.text('FUSION FITNESS GYM', 105, 20, { align: 'center' });
+    doc.setTextColor(243, 142, 38);
+    doc.text('KOACH GYM', 105, 20, { align: 'center' });
     
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
@@ -429,7 +429,7 @@ export default function AdminDashboard() {
         ['Usuario del Sistema', staffName || '-'],
       ],
       theme: 'grid',
-      headStyles: { fillColor: [249, 115, 22] },
+      headStyles: { fillColor: [243, 142, 38] },
     });
 
     // Sello diagonal "PAGADO" centrado en la tabla
@@ -449,7 +449,7 @@ export default function AdminDashboard() {
     const stampStartY = tableCenterY + (textW / 2) * sin45;
 
     doc.setGState(new (doc as any).GState({opacity: 0.13}));
-    doc.setTextColor(249, 115, 22);
+    doc.setTextColor(243, 142, 38);
     doc.text('PAGADO', stampStartX, stampStartY, { angle: 45 });
     doc.setGState(new (doc as any).GState({opacity: 1.0}));
     doc.setTextColor(0, 0, 0);
@@ -458,10 +458,10 @@ export default function AdminDashboard() {
     doc.setFontSize(10);
     doc.setTextColor(150);
     doc.text('---------------------------------------------------------', 105, finalY + 20, { align: 'center' });
-    doc.text('Sello Institucional - Fusion Fitness', 105, finalY + 26, { align: 'center' });
+    doc.text('Sello Institucional - Koach Gym', 105, finalY + 26, { align: 'center' });
 
     try {
-      const logo = await loadImage('/logo_B.png');
+      const logo = await loadImage('/logo_dark.png');
       doc.addImage(logo, 'PNG', 85, finalY + 35, 40, 40);
     } catch (e) {
       console.warn('No se pudo cargar el logo final', e);
@@ -473,7 +473,7 @@ export default function AdminDashboard() {
     doc.text('ESTE COMPROBANTE ES VÁLIDO COMO CONSTANCIA DE PAGO', 105, finalY + 82, { align: 'center' });
     doc.setTextColor(0, 0, 0);
 
-    doc.save(`Comprobante_Pago_${member.name.replace(/\\s+/g, '_')}.pdf`);
+    doc.save(`KoachGym_Comprobante_${member.name.replace(/\\s+/g, '_')}.pdf`);
   };
 
   const renderContent = () => {
@@ -519,10 +519,10 @@ export default function AdminDashboard() {
         <div className="absolute top-4 right-4"><button onClick={() => setIsDarkMode(!isDarkMode)} className="p-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full text-black dark:text-white shadow-lg transition-all">{isDarkMode ? <Sun size={18}/> : <Moon size={18}/>}</button></div>
         <div className="w-full max-w-[380px] bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-10 rounded-[40px] backdrop-blur-3xl shadow-2xl animate-in zoom-in duration-500">
           <div className="flex justify-center mb-6">
-            <img src={isDarkMode ? "/logo_B.png" : "/logo.png"} alt="Fusion Fitness Logo" className="h-24 w-auto object-contain drop-shadow-xl" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
-            <div className="hidden p-4 bg-orange-500 rounded-2xl shadow-xl shadow-orange-500/30"><ShieldCheck size={32} className="text-black dark:text-white" /></div>
+            <img src={isDarkMode ? "/logo_dark.png" : "/logo_light.png"} alt="Koach Gym Logo" className="h-24 w-auto object-contain drop-shadow-xl" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+            <div className="hidden p-4 rounded-2xl shadow-xl" style={{backgroundColor:'#F38E26', boxShadow:'0 20px 40px rgba(243,142,38,0.3)'}}><ShieldCheck size={32} className="text-black dark:text-white" /></div>
           </div>
-          <h2 className="text-2xl font-black text-center mb-8 tracking-tighter uppercase font-sans"><span className="text-black dark:text-white">Fusion</span> <span className="text-orange-500">Fitness</span></h2>
+          <h2 className="text-2xl font-black text-center mb-8 tracking-tighter uppercase font-sans"><span className="text-black dark:text-white">Koach</span> <span style={{color:'#F38E26'}}>Gym</span></h2>
           
           {error && (
             <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-[9px] font-black uppercase mb-6 animate-in fade-in slide-in-from-top-2 duration-300">
@@ -532,11 +532,11 @@ export default function AdminDashboard() {
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
-            <input type="text" placeholder="Usuario" className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-2xl py-4 px-6 text-black dark:text-white outline-none focus:border-orange-500 transition-all text-center text-xs placeholder:text-gray-400 dark:placeholder:text-white/40" value={loginUser} onChange={(e) => setLoginUser(e.target.value)} required />
-            <input type="password" placeholder="Contraseña" className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-2xl py-4 px-6 text-black dark:text-white outline-none focus:border-orange-500 transition-all text-center text-xs placeholder:text-gray-400 dark:placeholder:text-white/40" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} required />
+            <input type="text" placeholder="Usuario" className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-2xl py-4 px-6 text-black dark:text-white outline-none transition-all text-center text-xs placeholder:text-gray-400 dark:placeholder:text-white/40" style={{'--tw-ring-color':'#F38E26'} as any} onFocus={e=>{e.currentTarget.style.borderColor='#F38E26'}} onBlur={e=>{e.currentTarget.style.borderColor=''}} value={loginUser} onChange={(e) => setLoginUser(e.target.value)} required />
+            <input type="password" placeholder="Contraseña" className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-2xl py-4 px-6 text-black dark:text-white outline-none transition-all text-center text-xs placeholder:text-gray-400 dark:placeholder:text-white/40" onFocus={e=>{e.currentTarget.style.borderColor='#F38E26'}} onBlur={e=>{e.currentTarget.style.borderColor=''}} value={loginPass} onChange={(e) => setLoginPass(e.target.value)} required />
             
             <div className="flex items-center gap-2 px-2 py-1">
-              <input type="checkbox" id="terms" checked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)} className="w-3 h-3 accent-orange-500 cursor-pointer" />
+              <input type="checkbox" id="terms" checked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)} className="w-3 h-3 cursor-pointer" style={{accentColor:'#F38E26'}} />
               <label htmlFor="terms" className="text-[9px] text-gray-500 dark:text-white/40 font-black uppercase cursor-pointer select-none">
                 Acepto los <span onClick={(e) => { e.preventDefault(); e.stopPropagation(); viewTermsPDF(); }} className="text-cyan-400 underline decoration-cyan-400 underline-offset-2 hover:text-cyan-300 transition-colors font-black">Términos y Condiciones — Atlascore IT Services S.A.S.</span>
               </label>
@@ -550,7 +550,7 @@ export default function AdminDashboard() {
               </p>
             </div>
 
-            <button type="submit" className="w-full py-4 bg-orange-500 rounded-2xl font-black text-black dark:text-white text-xs uppercase tracking-widest transition-all hover:bg-orange-600 shadow-xl shadow-orange-500/20">Ingresar</button>
+            <button type="submit" className="w-full py-4 rounded-2xl font-black text-white text-xs uppercase tracking-widest transition-all" style={{backgroundColor:'#F38E26', boxShadow:'0 20px 40px rgba(243,142,38,0.2)'}} onMouseEnter={e=>{e.currentTarget.style.backgroundColor='#e07d18'}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor='#F38E26'}}>Ingresar</button>
           </form>
         </div>
       </div>
@@ -686,11 +686,11 @@ export default function AdminDashboard() {
       <aside className="w-40 border-r border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-black/40 backdrop-blur-3xl flex flex-col p-4 shrink-0">
         <div className="flex flex-col gap-4 mb-8">
           <div className="flex items-center gap-2">
-            <img src={isDarkMode ? "/logo_B.png" : "/logo.png"} alt="Fusion Fitness Logo" className="w-8 h-8 object-contain drop-shadow-md" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
-            <div className="hidden w-8 h-8 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg"><Brain size={16} className="text-black dark:text-white" /></div>
-            <h1 className="text-[11px] font-black tracking-tighter uppercase leading-tight"><span className="text-black dark:text-white">Fusion</span> <br/><span className="text-orange-500">Fitness</span></h1>
+            <img src={isDarkMode ? "/logo_dark.png" : "/logo_light.png"} alt="Koach Gym Logo" className="w-8 h-8 object-contain drop-shadow-md" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+            <div className="hidden w-8 h-8 rounded-xl flex items-center justify-center shadow-lg" style={{backgroundColor:'#F38E26'}}><Brain size={16} className="text-white" /></div>
+            <h1 className="text-[11px] font-black tracking-tighter uppercase leading-tight"><span className="text-black dark:text-white">Koach</span> <br/><span style={{color:'#F38E26'}}>Gym</span></h1>
           </div>
-          <button onClick={() => setIsDarkMode(!isDarkMode)} className="w-full flex items-center justify-center gap-2 p-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-black dark:text-white shadow-sm transition-all hover:scale-[1.02]">
+          <button onClick={() => setIsDarkMode(!isDarkMode)} className="w-full flex items-center justify-center gap-2 p-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-black dark:text-white shadow-sm transition-all hover:scale-[1.02]" style={isDarkMode ? {borderColor:'#212C40'} : {}}>
             {isDarkMode ? <Sun size={12}/> : <Moon size={12}/>}
             <span className="text-[9px] font-black uppercase tracking-widest">{isDarkMode ? 'Claro' : 'Oscuro'}</span>
           </button>
@@ -728,7 +728,7 @@ export default function AdminDashboard() {
 
       <main className="flex-1 overflow-y-auto p-6 relative bg-gray-100 dark:bg-[#050505]">
         <header className="flex items-center justify-between mb-8 max-w-full gap-4">
-          <div className="min-w-0"><h2 className="text-xl font-black text-black dark:text-white tracking-tighter uppercase truncate">{activeTab}</h2><p className="text-[7px] text-gray-500 dark:text-white/20 uppercase font-black tracking-[0.3em]">Fusion Fitness GYM</p></div>
+          <div className="min-w-0"><h2 className="text-xl font-black text-black dark:text-white tracking-tighter uppercase truncate">{activeTab}</h2><p className="text-[7px] uppercase font-black tracking-[0.3em]" style={{color:'#6E8AC9'}}>Koach Gym</p></div>
 
           {/* License expired banner — header */}
           <div className="flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-950/50 border border-red-300 dark:border-red-700/70 rounded-xl flex-1 max-w-xs animate-in fade-in duration-700">
@@ -738,7 +738,7 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 bg-orange-500 rounded-xl shadow-lg shadow-orange-500/20 font-black text-[8px] uppercase tracking-widest hover:scale-105 transition-all whitespace-nowrap"><Download size={14}/> Reporte Global</button>
+          <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 rounded-xl font-black text-[8px] uppercase tracking-widest hover:scale-105 transition-all whitespace-nowrap text-white" style={{backgroundColor:'#F38E26', boxShadow:'0 10px 30px rgba(243,142,38,0.2)'}}><Download size={14}/> Reporte Global</button>
         </header>
         <div className="max-w-full overflow-x-hidden">
         {error && (
@@ -857,7 +857,7 @@ function BillingModule({ members, onDeletePayment }: any) {
 
        <div className="grid grid-cols-3 gap-4">
           <div className="bg-white dark:bg-white/5 p-6 rounded-2xl border border-gray-200 dark:border-white/5"><p className="text-[9px] font-black text-gray-500 dark:text-white/20 uppercase">Cobros Registrados</p><p className="text-xl font-black text-black dark:text-white">${total.toLocaleString()}</p></div>
-          <div className="bg-white dark:bg-white/5 p-6 rounded-2xl border border-gray-200 dark:border-white/5"><p className="text-[9px] font-black text-gray-500 dark:text-white/20 uppercase">Más Usado</p><p className="text-xl font-black text-orange-500 truncate" title={mostUsedPlan}>{mostUsedPlan}</p></div>
+          <div className="bg-white dark:bg-white/5 p-6 rounded-2xl border border-gray-200 dark:border-white/5"><p className="text-[9px] font-black text-gray-500 dark:text-white/20 uppercase">Más Usado</p><p className="text-xl font-black truncate" style={{color:'#F38E26'}} title={mostUsedPlan}>{mostUsedPlan}</p></div>
           <div className="bg-white dark:bg-white/5 p-6 rounded-2xl border border-gray-200 dark:border-white/5"><p className="text-[9px] font-black text-gray-500 dark:text-white/20 uppercase">Facturas</p><p className="text-xl font-black text-black dark:text-white">{sorted.length}</p></div>
        </div>
        <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 rounded-3xl overflow-x-auto shadow-2xl">
@@ -870,7 +870,7 @@ function BillingModule({ members, onDeletePayment }: any) {
                      <td className="p-4 text-gray-600 dark:text-white/40 text-[9px] whitespace-nowrap">{h.date}</td>
                      <td className="p-4 text-gray-600 dark:text-white/40 text-[9px] truncate max-w-[100px]">{h.plan}</td>
                      <td className="p-4"><span className="px-2 py-1 bg-white dark:bg-white/5 rounded-lg text-[7px] font-black uppercase">{h.method}</span></td>
-                     <td className="p-4 text-[9px] font-black text-orange-400 truncate max-w-[100px]">{h.processed_by || '—'}</td>
+                     <td className="p-4 text-[9px] font-black truncate max-w-[100px]" style={{color:'#F38E26'}}>{h.processed_by || '—'}</td>
                      <td className="p-4 text-right font-black text-green-500 whitespace-nowrap">${h.amount.toLocaleString()}</td>
                      <td className="p-4 text-center">
                        {h.id && <button onClick={() => onDeletePayment(h.id)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-red-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg"><Trash2 size={12}/></button>}
@@ -885,12 +885,12 @@ function BillingModule({ members, onDeletePayment }: any) {
 }
 
 function SidebarItem({ icon, label, active = false, onClick }: any) {
-  return <div onClick={onClick} className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all cursor-pointer ${active ? 'bg-orange-500 text-black dark:text-white shadow-lg' : 'text-gray-500 dark:text-white/20 hover:text-black dark:text-white hover:bg-white dark:bg-white/5'}`}>{icon}<span className="text-[9px] font-black uppercase tracking-widest">{label}</span></div>;
+  return <div onClick={onClick} style={active ? {backgroundColor:'#F38E26', boxShadow:'0 4px 15px rgba(243,142,38,0.3)'} : {}} className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all cursor-pointer ${active ? 'text-white' : 'text-gray-500 dark:text-white/20 hover:text-black dark:text-white hover:bg-white dark:bg-white/5'}`}>{icon}<span className="text-[9px] font-black uppercase tracking-widest">{label}</span></div>;
 }
 
 function SummaryCard({ title, value, icon, onClick, color }: any) {
-  const colors: any = { blue: 'text-orange-400', green: 'text-green-400', orange: 'text-orange-400', purple: 'text-purple-400' };
-  return <div onClick={onClick} className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 p-4 rounded-xl cursor-pointer hover:border-orange-500/20 transition-all flex justify-between items-center"><div className="space-y-1"><p className="text-[7px] font-black text-gray-500 dark:text-white/20 uppercase tracking-widest">{title}</p><p className="text-lg font-black text-black dark:text-white">{value}</p></div><div className={`${colors[color]} bg-white dark:bg-white/5 p-2 rounded-lg`}>{icon}</div></div>;
+  const iconColor = color === 'green' ? '#10b981' : color === 'purple' ? '#a855f4' : '#F38E26';
+  return <div onClick={onClick} className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 p-4 rounded-xl cursor-pointer transition-all flex justify-between items-center" onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(243,142,38,0.3)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor=''}}><div className="space-y-1"><p className="text-[7px] font-black text-gray-500 dark:text-white/20 uppercase tracking-widest">{title}</p><p className="text-lg font-black text-black dark:text-white">{value}</p></div><div className="bg-white dark:bg-white/5 p-2 rounded-lg" style={{color: iconColor}}>{icon}</div></div>;
 }
 
 function memberDaysInfo(joinedAt: string, status: string): { daysIn: number; daysLeft: number; overdueDays: number } {
@@ -953,12 +953,13 @@ function MembersModule({ members, onEdit, onDelete, onAddClick, onPayClick, onHi
         <div className="flex items-center gap-3 w-full sm:w-auto flex-wrap">
           <div className="relative flex-1 sm:w-52">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-white/20" size={14} />
-            <input type="text" placeholder="Buscar por DNI o Nombre..." className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-2 pl-9 pr-4 text-black dark:text-white text-[10px] outline-none focus:border-orange-500/50 transition-all" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+            <input type="text" placeholder="Buscar por DNI o Nombre..." className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-2 pl-9 pr-4 text-black dark:text-white text-[10px] ou" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
-          <div className="flex gap-1 flex-wrap">
+          <div className="flex items-center gap-1">
             {statusOptions.map(s => (
               <button key={s} onClick={() => setStatusFilter(s)}
-                className={`px-3 py-1.5 rounded-lg text-[8px] font-black uppercase transition-all ${statusFilter === s ? 'bg-orange-500 text-black' : 'bg-white dark:bg-white/5 text-gray-500 dark:text-white/30 hover:text-black dark:hover:text-white'}`}>
+                style={statusFilter === s ? {backgroundColor:'#F38E26', color:'#fff'} : {}}
+                className={`px-3 py-1.5 rounded-lg text-[8px] font-black uppercase transition-all ${statusFilter === s ? '' : 'bg-white dark:bg-white/5 text-gray-500 dark:text-white/30 hover:text-black dark:hover:text-white'}`}>
                 {s === 'TODOS' ? `Todos (${members.length})` : s === 'ACTIVO' ? `Al día (${members.filter((m:any)=>m.status==='ACTIVO'||m.status==='AL DIA').length})` : s === 'POR VENCER' ? `Por vencer (${members.filter((m:any)=>m.status==='POR VENCER').length})` : s === 'DEUDA' ? `Deuda (${members.filter((m:any)=>m.status==='DEUDA').length})` : `Inactivo (${members.filter((m:any)=>m.status==='INACTIVO').length})`}
               </button>
             ))}
@@ -970,10 +971,10 @@ function MembersModule({ members, onEdit, onDelete, onAddClick, onPayClick, onHi
         {filteredMembers.map((m: any) => {
           const { daysIn, daysLeft } = memberDaysInfo(m.effective_joined_at || m.joined_at, m.status);
           return (
-            <div key={m.id} className="p-4 bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/5 hover:border-orange-500/10 transition-all group overflow-hidden">
+            <div key={m.id} className="p-4 bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/5 transition-all group overflow-hidden" onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(243,142,38,0.15)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor=''}}>
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 bg-neutral-800 rounded-xl flex items-center justify-center font-black text-orange-500 text-sm shrink-0">{m.name[0]}</div>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-white text-sm shrink-0" style={{backgroundColor:'#212C40', color:'#F38E26'}}>{m.name[0]}</div>
                   <div className="min-w-0">
                     <p className="font-black text-black dark:text-white text-[10px] uppercase truncate">{m.name}</p>
                     <p className="text-[8px] text-gray-500 dark:text-white/20 uppercase font-black truncate">{m.membership_type || '—'}</p>
@@ -990,9 +991,9 @@ function MembersModule({ members, onEdit, onDelete, onAddClick, onPayClick, onHi
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => onPayClick(m)} className="col-span-2 py-2 bg-green-500/10 text-green-500 rounded-lg text-[8px] font-black uppercase hover:bg-green-500 hover:text-black dark:text-white transition-all">Cobrar</button>
+                <button onClick={() => onPayClick(m)} className="col-span-2 py-2 bg-green-500/10 text-green-500 rounded-lg text-[8px] font-black uppercase hover:bg-green-500 hover:text-white transition-all">Cobrar</button>
                 <button onClick={() => onEdit(m)} className="py-2 bg-white dark:bg-white/5 text-gray-600 dark:text-white/40 rounded-lg text-[8px] font-black uppercase">Editar</button>
-                <button onClick={() => onHistory(m)} className="py-2 bg-white dark:bg-white/5 text-orange-400 rounded-lg text-[8px] font-black uppercase">Historial</button>
+                <button onClick={() => onHistory(m)} className="py-2 rounded-lg text-[8px] font-black uppercase" style={{color:'#F38E26', backgroundColor:'rgba(243,142,38,0.08)'}}>Historial</button>
                 <button onClick={() => onDelete(m.id)} className="col-span-2 py-2 bg-red-500/10 text-red-500 rounded-lg text-[8px] font-black uppercase opacity-0 group-hover:opacity-100 transition-all">Dar de Baja</button>
               </div>
             </div>
@@ -1006,11 +1007,11 @@ function MembersModule({ members, onEdit, onDelete, onAddClick, onPayClick, onHi
 function PlansModule({ plans, onEdit, onDelete, onAddClick }: any) {
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center"><h3 className="font-black text-lg uppercase">Planes</h3><button onClick={onAddClick} className="bg-orange-500 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest">+ Nuevo</button></div>
+      <div className="flex justify-between items-center"><h3 className="font-black text-lg uppercase">Planes</h3><button onClick={onAddClick} className="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-white" style={{backgroundColor:'#F38E26'}}>+ Nuevo</button></div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
          {plans.map((p: any) => (
            <div key={p.id} className="p-6 bg-white dark:bg-white/5 rounded-3xl border border-gray-200 dark:border-white/5 relative group">
-              <p className="text-[8px] font-black text-orange-500 uppercase tracking-widest mb-2">{p.name}</p>
+              <p className="text-[8px] font-black uppercase tracking-widest mb-2" style={{color:'#F38E26'}}>{p.name}</p>
               <p className="text-2xl font-black mb-4">${p.price}<span className="text-[10px] text-gray-500 dark:text-white/20 font-black">/mes</span></p>
               <div className="space-y-1 mb-6">
                  <div className="flex items-center gap-2 text-[10px] text-gray-600 dark:text-white/40 font-bold"><CheckCircle size={10} className="text-green-500"/> {p.daysPerWeek} días</div>
@@ -1027,11 +1028,11 @@ function PlansModule({ plans, onEdit, onDelete, onAddClick }: any) {
 function StaffModule({ staff, onEdit, onDelete, onAddClick }: any) {
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center"><h3 className="font-black text-lg uppercase">Personal</h3><button onClick={onAddClick} className="bg-orange-500 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest">+ Nuevo</button></div>
+      <div className="flex justify-between items-center"><h3 className="font-black text-lg uppercase">Personal</h3><button onClick={onAddClick} className="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-white" style={{backgroundColor:'#F38E26'}}>+ Nuevo</button></div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
          {staff.map((s: any) => (
-           <div key={s.id} className="p-6 bg-white dark:bg-white/5 rounded-3xl border border-gray-200 dark:border-white/5 group hover:border-orange-500/20 transition-all">
-             <div className="flex items-center gap-4 mb-6"><div className="w-12 h-12 bg-orange-500/10 rounded-2xl flex items-center justify-center text-orange-500 text-lg font-black group-hover:bg-orange-500 group-hover:text-black dark:text-white transition-all shadow-lg">{s.name[0]}</div><div><p className="font-black text-black dark:text-white text-[11px] uppercase mb-1 truncate w-24">{s.name}</p><p className="text-[8px] text-gray-500 dark:text-white/20 uppercase font-black tracking-widest">{s.role}</p></div></div>
+           <div key={s.id} className="p-6 bg-white dark:bg-white/5 rounded-3xl border border-gray-200 dark:border-white/5 group transition-all" onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(243,142,38,0.2)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor=''}}>
+             <div className="flex items-center gap-4 mb-6"><div className="w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-black transition-all shadow-lg" style={{backgroundColor:'rgba(243,142,38,0.1)', color:'#F38E26'}} onMouseEnter={e=>{e.currentTarget.style.backgroundColor='#F38E26';e.currentTarget.style.color='#fff'}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor='rgba(243,142,38,0.1)';e.currentTarget.style.color='#F38E26'}}>{s.name[0]}</div><div><p className="font-black text-black dark:text-white text-[11px] uppercase mb-1 truncate w-24">{s.name}</p><p className="text-[8px] text-gray-500 dark:text-white/20 uppercase font-black tracking-widest">{s.role}</p></div></div>
              <div className="flex gap-2"><button onClick={() => onEdit(s)} className="flex-1 py-2 bg-white dark:bg-white/5 rounded-xl text-[9px] font-black uppercase">Editar</button><button onClick={() => onDelete(s.id)} className="p-2 bg-red-500/10 text-red-500 rounded-xl"><Trash2 size={16}/></button></div>
            </div>
          ))}
@@ -1211,12 +1212,12 @@ function ProfileModule({ user, onSave }: any) {
   return (
     <div className="max-w-xl mx-auto space-y-6">
       <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 p-8 rounded-3xl text-center space-y-4">
-         <div className="w-20 h-20 bg-orange-500 rounded-full flex items-center justify-center mx-auto text-black dark:text-white shadow-xl shadow-orange-500/20">
+         <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto text-white shadow-xl" style={{backgroundColor:'#F38E26', boxShadow:'0 20px 40px rgba(243,142,38,0.2)'}}>
             <User size={32} />
          </div>
          <div>
             <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-widest">{user?.name}</h2>
-            <p className="text-[10px] text-orange-400 font-black uppercase mt-1">{user?.role}</p>
+             <p className="text-[10px] font-black uppercase mt-1" style={{color:'#F38E26'}}>{user?.role}</p>
          </div>
       </div>
       
@@ -1226,7 +1227,7 @@ function ProfileModule({ user, onSave }: any) {
             <label className="text-[9px] text-gray-500 dark:text-white/20 uppercase font-black px-2">Nueva Contraseña</label>
             <input type="text" placeholder="Ingresa tu nueva clave..." className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl p-4 text-black dark:text-white text-xs" value={password} onChange={e=>setPassword(e.target.value)} />
          </div>
-         <button className="w-full py-4 bg-orange-500 rounded-xl font-black text-black dark:text-white text-xs uppercase transition-all hover:bg-orange-600 shadow-lg shadow-orange-500/20 mt-4" onClick={() => onSave(password)}>Guardar Cambios</button>
+         <button className="w-full py-4 rounded-xl font-black text-white text-xs uppercase transition-all shadow-lg mt-4" style={{backgroundColor:'#F38E26', boxShadow:'0 10px 25px rgba(243,142,38,0.2)'}} onMouseEnter={e=>{e.currentTarget.style.backgroundColor='#e07d18'}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor='#F38E26'}} onClick={() => onSave(password)}>Guardar Cambios</button>
       </div>
     </div>
   );

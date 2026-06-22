@@ -58,7 +58,7 @@ const STATUS_CFG: Record<string, { label: string; color: string; bg: string; bor
   INACTIVO:    { label: 'Inactivo',    color: 'text-gray-400',   bg: 'bg-gray-400/10',   border: 'border-gray-400/30',   Icon: AlertCircle },
 };
 
-const CHART_COLORS = ['#f97316','#3b82f6','#10b981','#a855f7','#f43f5e','#eab308','#06b6d4'];
+const CHART_COLORS = ['#F38E26','#6E8AC9','#10b981','#a855f7','#f43f5e','#eab308','#06b6d4'];
 
 const todayISO = () => new Date().toISOString().split('T')[0];
 
@@ -87,7 +87,7 @@ function NumPad({ value, onChange, onSubmit, loading, error, isDark }:
     <div className="w-full max-w-xs mx-auto space-y-3">
       <div className={`rounded-2xl border-2 px-5 py-4 text-center text-3xl font-black tracking-[0.3em] transition-colors
         ${error ? 'border-red-500 text-red-400' :
-          isDark ? 'border-orange-500/40 text-white bg-white/5' : 'border-orange-400/50 text-gray-900 bg-white/70'}`}>
+          isDark ? 'border-[#F38E26]/40 text-white bg-white/5' : 'border-[#F38E26]/50 text-gray-900 bg-white/70'}`}>
         {value || <span className="opacity-30">DNI</span>}
       </div>
       {error && (
@@ -116,8 +116,9 @@ function NumPad({ value, onChange, onSubmit, loading, error, isDark }:
       <button
         onClick={onSubmit}
         disabled={value.length < 4 || loading}
-        className="w-full h-16 rounded-2xl bg-orange-500 hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed
-          text-white text-xl font-black tracking-wide transition-all active:scale-95 shadow-lg shadow-orange-500/30"
+        className="w-full h-16 rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed
+          text-white text-xl font-black tracking-wide transition-all active:scale-95 shadow-lg"
+        style={{backgroundColor:'#F38E26', boxShadow:'0 8px 25px rgba(243,142,38,0.3)'}}
       >
         {loading ? 'Buscando...' : 'INGRESAR →'}
       </button>
@@ -128,7 +129,7 @@ function NumPad({ value, onChange, onSubmit, loading, error, isDark }:
 function Spinner() {
   return (
     <div className="flex items-center justify-center h-10">
-      <div className="w-8 h-8 border-4 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin" style={{borderColor:'rgba(243,142,38,0.3)', borderTopColor:'#F38E26'}} />
     </div>
   );
 }
@@ -151,8 +152,8 @@ function CounterBtn({ label, value, onChange, min = 0, step = 1, isDark }:
         </span>
         <button
           onClick={() => onChange(value + step)}
-          className="w-8 h-8 rounded-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white transition-all active:scale-90"
-        >
+          className="w-8 h-8 rounded-full flex items-center justify-center text-white transition-all active:scale-90"
+          style={{backgroundColor:'#F38E26'}}>
           <Plus size={14} />
         </button>
       </div>
@@ -171,7 +172,7 @@ function ExerciseCard({ ex, onUpdate, onRemove, isDark }:
       className={`rounded-2xl p-4 border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-sm'}`}
     >
       <div className="flex items-center justify-between mb-3">
-        <span className={`font-bold text-sm ${isDark ? 'text-orange-400' : 'text-orange-600'}`}>{ex.name}</span>
+        <span className={`font-bold text-sm`} style={{color: isDark ? '#F38E26' : '#d07020'}}>{ex.name}</span>
         <button onClick={onRemove} className={`rounded-full p-1 transition-colors ${isDark ? 'hover:bg-white/10 text-white/40' : 'hover:bg-gray-100 text-gray-400'}`}>
           <X size={14} />
         </button>
@@ -196,8 +197,9 @@ function ExercisePicker({ onAdd, isDark }: { onAdd: (name: string) => void; isDa
     <div className="relative">
       <button
         onClick={() => setOpen(v => !v)}
-        className="w-full h-12 rounded-2xl border-2 border-dashed border-orange-500/40 flex items-center justify-center gap-2
-          text-orange-500 font-bold text-sm hover:border-orange-500/70 hover:bg-orange-500/5 transition-all"
+        className="w-full h-12 rounded-2xl border-2 border-dashed flex items-center justify-center gap-2
+          font-bold text-sm hover:bg-[#F38E26]/5 transition-all"
+        style={{borderColor:'rgba(243,142,38,0.4)', color:'#F38E26'}}
       >
         <Plus size={18} /> Agregar Ejercicio
       </button>
@@ -216,7 +218,8 @@ function ExercisePicker({ onAdd, isDark }: { onAdd: (name: string) => void; isDa
                   <button
                     onClick={() => setOpenCat(openCat === cat ? null : cat)}
                     className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors
-                      ${isDark ? 'hover:bg-white/5 text-orange-400' : 'hover:bg-orange-50 text-orange-600'}`}
+                      ${isDark ? 'hover:bg-white/5' : 'hover:bg-[#F38E26]/5'}`}
+                    style={{color: isDark ? '#F38E26' : '#d07020'}}
                   >
                     {cat}
                     {openCat === cat ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -391,9 +394,9 @@ export default function TotemPlan() {
               transition={{ delay: 0.1 }}
               className="mb-8 flex flex-col items-center gap-4"
             >
-              <img src="/logo_B.png" alt="Logo" className="w-24 h-24 object-contain drop-shadow-lg" />
+              <img src={isDark ? '/logo_dark.png' : '/logo_light.png'} alt="Koach Gym Logo" className="w-24 h-24 object-contain drop-shadow-lg" />
               <div className="text-center">
-                <h1 className="text-3xl font-black text-orange-500 tracking-tight">FUSION FITNESS</h1>
+                <h1 className="text-3xl font-black tracking-tight" style={{color:'#F38E26'}}>KOACH GYM</h1>
                 <p className={`text-sm font-semibold tracking-[0.2em] uppercase mt-1 ${muted}`}>Totem de Entrenamiento</p>
               </div>
             </motion.div>
@@ -431,7 +434,7 @@ export default function TotemPlan() {
             <header className={`sticky top-0 z-40 border-b px-6 py-4 flex items-center justify-between backdrop-blur-sm
               ${isDark ? 'bg-neutral-950/90 border-white/10' : 'bg-white/90 border-gray-200'}`}>
               <div className="flex items-center gap-4">
-                <img src="/logo_B.png" alt="Logo" className="w-9 h-9 object-contain" />
+                <img src={isDark ? '/logo_dark.png' : '/logo_light.png'} alt="Logo" className="w-9 h-9 object-contain" />
                 <div>
                   <p className={`text-xs font-semibold uppercase tracking-wider ${muted}`}>Bienvenido/a</p>
                   <h2 className="text-lg font-black leading-tight">{member.name}</h2>
@@ -496,10 +499,10 @@ export default function TotemPlan() {
                     key={tab}
                     onClick={() => setActiveTab(tab)}
                     className={`flex items-center gap-2 px-5 py-3 rounded-t-xl text-sm font-bold transition-all border-b-2
-                      ${activeTab === tab
-                        ? `${isDark ? 'text-orange-400 border-orange-500 bg-orange-500/10' : 'text-orange-600 border-orange-500 bg-orange-50'}`
-                        : `${isDark ? 'text-white/40 border-transparent hover:text-white/70' : 'text-gray-400 border-transparent hover:text-gray-600'}`
-                      }`}
+                       ${activeTab === tab
+                        ? (isDark ? 'text-[#F38E26] border-[#F38E26] bg-[#F38E26]/10' : 'text-[#d07020] border-[#F38E26] bg-[#F38E26]/5')
+                        : (isDark ? 'text-white/40 border-transparent hover:text-white/70' : 'text-gray-400 border-transparent hover:text-gray-600')
+                       }`}
                   >
                     <Icon size={15} />
                     <span className="hidden sm:inline">{label}</span>
@@ -534,10 +537,8 @@ export default function TotemPlan() {
                             onClick={handleSave}
                             disabled={saving}
                             whileTap={{ scale: 0.95 }}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg
-                              ${saveOk
-                                ? 'bg-green-500 shadow-green-500/30 text-white'
-                                : 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/30 text-white disabled:opacity-50'}`}
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg text-white"
+                            style={{backgroundColor: saveOk ? '#10b981' : '#F38E26', boxShadow: saveOk ? '0 8px 25px rgba(16,185,129,0.3)' : '0 8px 25px rgba(243,142,38,0.3)'}}
                           >
                             {saving ? <Spinner /> : saveOk ? <CheckCircle size={16} /> : <Save size={16} />}
                             {saving ? 'Guardando…' : saveOk ? '¡Guardado!' : 'Guardar'}

@@ -3,11 +3,11 @@
 ; Compilar: abrir este archivo en Inno Setup y presionar F9
 ; Resultado: Output\GymAtlas_Setup.exe
 
-#define MyAppName "GYM-ATLAS Smart Kiosk"
+#define MyAppName "Fusion Fitness"
 #define MyAppVersion "2.6"
-#define MyAppPublisher "Fusion Fitness"
-#define MyAppExeName "GymAtlas.exe"
-#define MyAppDir "dist\GymAtlas"
+#define MyAppPublisher "Fusion Fitness Cruz del Eje"
+#define MyAppExeName "FusionFitness.exe"
+#define MyAppDir "dist\FusionFitness"
 
 [Setup]
 AppId={{B4F2A3D1-7C8E-4F1A-9B2D-3E5F6A7C8D9E}
@@ -19,15 +19,11 @@ DefaultDirName={autopf}\GymAtlas
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 OutputDir=Output
-OutputBaseFilename=GymAtlas_Setup
-SetupIconFile=icon.ico
+OutputBaseFilename=FusionFitness_Setup
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
 WizardResizable=no
-; Mostrar un fondo de color oscuro en el instalador
-WizardImageFile=compiler:WizModernImage-IS.bmp
-WizardSmallImageFile=compiler:WizModernSmallImage-IS.bmp
 ; Requiere Windows 10+
 MinVersion=10.0
 PrivilegesRequired=admin
@@ -49,7 +45,7 @@ Name: "desktopicon"; \
     Flags: checkedonce
 
 Name: "autostart"; \
-    Description: "Iniciar GYM-ATLAS automáticamente con Windows"; \
+    Description: "Iniciar Fusion Fitness automáticamente con Windows"; \
     GroupDescription: "Opciones de inicio:"; \
     Flags: unchecked
 
@@ -104,48 +100,14 @@ Filename: "taskkill"; \
     Flags: runhidden
 
 [Code]
-// ── Pantalla de configuración de base de datos ──────────────────────────────
-var
-  DbPage: TInputQueryWizardPage;
-
-procedure InitializeWizard;
-begin
-  DbPage := CreateInputQueryPage(
-    wpSelectDir,
-    'Configuración de Base de Datos',
-    'Conexión a Neon PostgreSQL',
-    'Ingresá la URL de conexión a tu base de datos Neon.tech.' + #13#10 +
-    'Formato: postgresql://usuario:clave@host/db?sslmode=require' + #13#10 +
-    '(Podés dejarlo vacío y configurarlo manualmente después en el archivo .env)'
-  );
-  DbPage.Add('DATABASE_URL:', False);
-  DbPage.Values[0] := '';
-end;
-
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   EnvFile: string;
-  DbUrl: string;
-  FileContent: TStringList;
 begin
   if CurStep = ssPostInstall then
   begin
-    DbUrl := DbPage.Values[0];
     EnvFile := ExpandConstant('{app}\.env');
-    FileContent := TStringList.Create;
-    try
-      // Si ya existe un .env, no lo sobreescribimos
-      if not FileExists(EnvFile) then
-      begin
-        if DbUrl <> '' then
-          FileContent.Add('DATABASE_URL=' + DbUrl)
-        else
-          FileContent.Add('# Configurá tu base de datos aqui:');
-          FileContent.Add('# DATABASE_URL=postgresql://usuario:clave@host/db?sslmode=require');
-        FileContent.SaveToFile(EnvFile);
-      end;
-    finally
-      FileContent.Free;
-    end;
+    if not FileExists(EnvFile) then
+      SaveStringToFile(EnvFile, 'DATABASE_URL=postgresql://neondb_owner:npg_9u7zFAqsQaxi@ep-withered-feather-apfc52bv-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require' + #13#10, False);
   end;
 end;

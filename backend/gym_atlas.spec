@@ -21,6 +21,10 @@ added_datas = [
 if Path("yolov8n.pt").exists():
     added_datas.append(("yolov8n.pt", "."))
 
+# Logo del gym
+if Path("logo_B.png").exists():
+    added_datas.append(("logo_B.png", "."))
+
 # .env config template for database connection
 if Path(".env").exists():
     added_datas.append((".env", "."))
@@ -88,13 +92,17 @@ a = Analysis(
         # Env
         "dotenv",
         "python_dotenv",
+        # Stdlib modules PyInstaller puede omitir en Python 3.14
+        "unittest",
+        "unittest.mock",
+        "unittest.case",
+        "unittest.util",
     ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[
         "tkinter.test",
-        "unittest",
         "pytest",
         "matplotlib",
         "notebook",
@@ -113,17 +121,17 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="GymAtlas",
+    name="FusionFitness",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=False,           # Sin ventana de consola negra
+    console=False,
     disable_windowed_traceback=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon="icon.ico" if Path("icon.ico").exists() else None,
+    icon="fusion_fitness.ico" if Path("fusion_fitness.ico").exists() else None,
 )
 
 coll = COLLECT(
@@ -134,5 +142,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="GymAtlas",
+    name="FusionFitness",
 )

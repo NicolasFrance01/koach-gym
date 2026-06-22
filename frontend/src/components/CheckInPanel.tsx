@@ -59,8 +59,8 @@ export default function CheckInPanel({ className = '' }: { className?: string })
   return (
     <div className={`p-6 flex flex-col ${className}`}>
       <div className="mb-8">
-        <div className="inline-flex items-center justify-center p-2 bg-orange-500/20 rounded-xl mb-4 ring-1 ring-white/10">
-          <Search className="text-orange-400" size={20} />
+        <div className="inline-flex items-center justify-center p-2 rounded-xl mb-4 ring-1 ring-white/10" style={{backgroundColor:'rgba(243,142,38,0.2)'}}>
+          <Search style={{color:'#F38E26'}} size={20} />
         </div>
         <h1 className="text-3xl font-black mb-1 tracking-tight bg-gradient-to-br from-white to-neutral-500 bg-clip-text text-transparent">Access Control</h1>
         <p className="text-neutral-400 text-sm font-medium">Ingrese su DNI para acceder</p>
@@ -74,12 +74,14 @@ export default function CheckInPanel({ className = '' }: { className?: string })
           onChange={(e) => setDni(e.target.value)}
           placeholder="Número de DNI" 
           autoFocus
-          className="w-full bg-white/5 text-white text-2xl p-4 rounded-2xl border border-white/10 focus:outline-none focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/20 transition-all placeholder:text-neutral-600 backdrop-blur-md" 
+          className="w-full bg-white/5 text-white text-2xl p-4 rounded-2xl border border-white/10 focus:outline-none transition-all placeholder:text-neutral-600 backdrop-blur-md" 
+          onFocus={e=>{e.currentTarget.style.borderColor='rgba(243,142,38,0.5)';e.currentTarget.style.boxShadow='0 0 0 4px rgba(243,142,38,0.1)'}}
+          onBlur={e=>{e.currentTarget.style.borderColor='';e.currentTarget.style.boxShadow=''}}
         />
         <button 
           type="submit" 
           disabled={loading}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-orange-500 rounded-xl shadow-lg shadow-orange-500/30 hover:bg-orange-500 hover:scale-105 transition-all"
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-xl shadow-lg transition-all hover:scale-105" style={{backgroundColor:'#F38E26', boxShadow:'0 8px 20px rgba(243,142,38,0.3)'}}
         >
           {loading ? (
              <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin" />

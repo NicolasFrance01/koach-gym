@@ -13,3 +13,15 @@ venv/
 node_modules/
 dist/
 .DS_Store
+
+# Backend build artifacts (large binaries)
+backend/build/
+backend/dist/
+backend/Output/
+*.exe
+*.pkg
+*.spec
+*.ico
+*.pt
+*.zip
+backend/logo_B.png
