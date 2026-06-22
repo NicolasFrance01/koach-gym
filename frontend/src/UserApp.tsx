@@ -146,7 +146,7 @@ export default function UserApp() {
              </div>
              <div className="space-y-4">
                 {userData.currentRoutine.map(ex => (
-                  <div key={ex.id} className={`p-8 rounded-[40px] border transition-all ${ex.completed ? 'bg-green-500/10 border-green-500/20 shadow-lg shadow-green-500/5' : 'bg-neutral-900 border-white/5'}`}>
+                  <div key={ex.id} className={`p-8 rounded-[40px] border transition-all ${ex.completed ? 'bg-green-500/10 border-green-500/20 shadow-lg shadow-green-500/5' : 'bg-[#141b29] border-white/5'}`}>
                      <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-5">
                            <div onClick={()=>toggleExercise(ex.id)} className={`w-14 h-14 rounded-2xl flex items-center justify-center cursor-pointer transition-all ${ex.completed ? 'bg-green-500 text-white shadow-lg shadow-green-500/30' : 'bg-white/5 text-white/20 hover:text-white hover:bg-white/10'}`}>
@@ -170,7 +170,7 @@ export default function UserApp() {
       case 'Evolution':
         return (
           <div className="space-y-8 animate-in slide-in-from-bottom-8">
-             <div className="bg-neutral-900 border border-white/5 p-10 rounded-[50px] shadow-3xl">
+             <div className="bg-[#141b29] border border-white/5 p-10 rounded-[50px] shadow-3xl">
                 <h3 className="text-2xl font-black mb-8 flex items-center gap-4 uppercase tracking-tighter"><TrendingUp className="text-orange-500" size={28}/> Mi Progreso</h3>
                 <div className="h-80 mb-10">
                    <ResponsiveContainer width="100%" height="100%">
@@ -196,7 +196,7 @@ export default function UserApp() {
       case 'Calendar':
         return (
           <div className="space-y-8 animate-in slide-in-from-bottom-8">
-             <div className="bg-neutral-900 border border-white/5 p-10 rounded-[50px] shadow-3xl">
+             <div className="bg-[#141b29] border border-white/5 p-10 rounded-[50px] shadow-3xl">
                 <div className="flex justify-between items-center mb-10">
                    <h3 className="text-2xl font-black uppercase tracking-tighter flex items-center gap-4"><Clock className="text-blue-500" size={28}/> Agenda</h3>
                    <div onClick={()=>setActiveTab('Calendar')} className="px-5 py-2 text-[10px] font-black rounded-2xl uppercase shadow-lg" style={{backgroundColor:'rgba(110,138,201,0.2)', color:'#6E8AC9'}}>{bookings.length}/{userData.maxDaysPerWeek} Días</div>
@@ -247,7 +247,7 @@ export default function UserApp() {
       case 'Profile':
         return (
           <div className="space-y-6 animate-in slide-in-from-bottom-8">
-             <div className="bg-neutral-900 border border-white/5 p-10 rounded-[50px] flex flex-col items-center">
+             <div className="bg-[#141b29] border border-white/5 p-10 rounded-[50px] flex flex-col items-center">
                 <div className="w-32 h-32 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-full flex items-center justify-center text-5xl font-black shadow-2xl mb-6 ring-4 ring-white/5">{userData.name[0]}</div>
                 <h2 className="text-3xl font-black text-white mb-2">{userData.name}</h2>
                 <span className="px-4 py-1.5 bg-blue-500/10 text-blue-400 text-[10px] font-black rounded-full uppercase tracking-[0.2em] mb-10">{userData.plan}</span>
@@ -271,18 +271,18 @@ export default function UserApp() {
                 <div><h2 className="text-4xl font-black text-white tracking-tighter">¡Hola, {userData.name.split(' ')[0]}! 👋</h2><p className="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-1">Estatus: Bestia en Entrenamiento</p></div>
                 <div onClick={()=>setActiveTab('Profile')} className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 active:scale-90 transition-all"><User size={24} className="text-blue-500" /></div>
              </header>
-             <section className="bg-gradient-to-br from-neutral-900 to-black p-12 rounded-[60px] border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.8)] text-center relative overflow-hidden group">
+             <section className="bg-gradient-to-br from-[#141b29] to-black p-12 rounded-[60px] border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.8)] text-center relative overflow-hidden group">
                  <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_-20%,rgba(110,138,201,0.25),transparent_70%)]" />
                  <p className="text-xs uppercase tracking-[0.5em] font-black mb-10 relative z-10 animate-pulse" style={{color:'#F38E26'}}>Racha de Fuego</p>
                 <div className="relative z-10 flex items-center justify-center gap-6 mb-10"><div className="p-5 bg-orange-500/10 rounded-full text-orange-500"><Zap size={40} strokeWidth={3} /></div><span className="text-9xl font-black tracking-tighter text-white">{userData.streak}</span></div>
                  <div onClick={()=>setActiveTab('Evolution')} className="py-5 px-10 rounded-3xl border text-[10px] uppercase font-black tracking-widest hover:text-white transition-all cursor-pointer relative z-10 mx-auto flex items-center justify-center gap-3" style={{backgroundColor:'rgba(243,142,38,0.1)', borderColor:'rgba(243,142,38,0.2)', color:'#F38E26'}} onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.backgroundColor='#F38E26';(e.currentTarget as HTMLDivElement).style.color='#fff'}} onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.backgroundColor='rgba(243,142,38,0.1)';(e.currentTarget as HTMLDivElement).style.color='#F38E26'}}>Explorar Evolución <ArrowUpRight size={16}/></div>
              </section>
              <div className="grid grid-cols-2 gap-6 pb-10">
-                 <button onClick={()=>setActiveTab('Training')} className="p-8 bg-neutral-900 border border-white/5 rounded-[50px] flex flex-col gap-6 group text-left transition-all" onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(243,142,38,0.3)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'}}>
+                 <button onClick={()=>setActiveTab('Training')} className="p-8 bg-[#141b29] border border-white/5 rounded-[50px] flex flex-col gap-6 group text-left transition-all" onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(243,142,38,0.3)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'}}>
                     <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all" style={{backgroundColor:'rgba(243,142,38,0.1)', color:'#F38E26'}} onMouseEnter={e=>{e.currentTarget.style.backgroundColor='#F38E26';e.currentTarget.style.color='#fff'}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor='rgba(243,142,38,0.1)';e.currentTarget.style.color='#F38E26'}}><Dumbbell size={28}/></div>
                    <div><p className="font-black text-2xl leading-none mb-1 uppercase">Entrenar</p><p className="text-[10px] text-white/20 font-black uppercase tracking-widest">3 Ejercicios hoy</p></div>
                 </button>
-                 <button onClick={()=>setActiveTab('Calendar')} className="p-8 bg-neutral-900 border border-white/5 rounded-[50px] flex flex-col gap-6 group text-left transition-all" onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(110,138,201,0.3)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'}}>
+                 <button onClick={()=>setActiveTab('Calendar')} className="p-8 bg-[#141b29] border border-white/5 rounded-[50px] flex flex-col gap-6 group text-left transition-all" onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(110,138,201,0.3)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'}}>
                     <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all" style={{backgroundColor:'rgba(110,138,201,0.1)', color:'#6E8AC9'}} onMouseEnter={e=>{e.currentTarget.style.backgroundColor='#6E8AC9';e.currentTarget.style.color='#fff'}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor='rgba(110,138,201,0.1)';e.currentTarget.style.color='#6E8AC9'}}><Clock size={28}/></div>
                    <div><p className="font-black text-2xl leading-none mb-1 uppercase">Agendar</p><p className="text-[10px] text-white/20 font-black uppercase tracking-widest">{bookings.length} Sesiones</p></div>
                 </button>
@@ -296,7 +296,7 @@ export default function UserApp() {
     <div className="min-h-screen bg-[#212C40] text-white font-sans p-6 pb-32 overflow-x-hidden">
       {isBookingModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-8 animate-in fade-in duration-300">
-           <div className="bg-neutral-900 border border-white/10 p-10 rounded-[50px] w-full max-w-sm">
+           <div className="bg-[#1b2435] border border-white/10 p-10 rounded-[50px] w-full max-w-sm">
               <div className="flex justify-between items-center mb-10"><h3 className="text-2xl font-black uppercase tracking-tighter">Día {selectedDay}</h3><button onClick={()=>setIsBookingModalOpen(false)}><X size={24} className="text-white/20 hover:text-white"/></button></div>
               <div className="space-y-8">
                  <div className="space-y-3"><label className="text-[10px] font-black text-white/20 uppercase tracking-widest">¿A qué hora vas?</label><input type="time" className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-xl font-black outline-none focus:border-orange-500" value={selectedTime} onChange={e=>setSelectedTime(e.target.value)} /></div>

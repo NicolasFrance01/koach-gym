@@ -210,7 +210,7 @@ function ExercisePicker({ onAdd, isDark }: { onAdd: (name: string) => void; isDa
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             className={`absolute bottom-14 left-0 right-0 z-50 rounded-2xl border shadow-2xl max-h-80 overflow-y-auto
-              ${isDark ? 'bg-neutral-900 border-white/10' : 'bg-white border-gray-200'}`}
+              ${isDark ? 'bg-[#1b2435] border-white/10' : 'bg-white border-gray-200'}`}
           >
             <div className="p-2">
               {Object.entries(EXERCISE_CATEGORIES).map(([cat, exs]) => (
@@ -394,7 +394,7 @@ export default function TotemPlan() {
               transition={{ delay: 0.1 }}
               className="mb-8 flex flex-col items-center gap-4"
             >
-              <img src={isDark ? '/logo_dark.png' : '/logo_light.png'} alt="Koach Gym Logo" className="w-44 h-44 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]" />
+              <img src={isDark ? '/logo_dark.png' : '/logo_light.png'} alt="Koach Gym Logo" className={`${isDark ? "w-44 h-44" : "w-[14.5rem] h-[14.5rem] -my-6"} object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]`} />
               <div className="text-center">
                 <h1 className="text-3xl font-black tracking-tight" style={{color:'#F38E26'}}>KOACH GYM</h1>
                 <p className={`text-sm font-semibold tracking-[0.2em] uppercase mt-1 ${muted}`}>Totem de Entrenamiento</p>
@@ -432,7 +432,7 @@ export default function TotemPlan() {
           >
             {/* Header */}
             <header className={`sticky top-0 z-40 border-b px-6 py-4 flex items-center justify-between backdrop-blur-sm
-              ${isDark ? 'bg-neutral-950/90 border-white/10' : 'bg-white/90 border-gray-200'}`}>
+              ${isDark ? 'bg-[#141b29]/95 border-white/10' : 'bg-white/90 border-gray-200'}`}>
               <div className="flex items-center gap-4">
                 <img src={isDark ? '/logo_dark.png' : '/logo_light.png'} alt="Logo" className="w-9 h-9 object-contain" />
                 <div>

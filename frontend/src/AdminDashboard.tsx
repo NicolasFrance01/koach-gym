@@ -425,7 +425,7 @@ export default function AdminDashboard() {
         <div className="absolute top-4 right-4"><button onClick={() => setIsDarkMode(!isDarkMode)} className="p-3 bg-[#6E8AC9]/10 dark:bg-white/5 border border-white/20 rounded-full text-black dark:text-white shadow-lg transition-all">{isDarkMode ? <Sun size={18}/> : <Moon size={18}/>}</button></div>
         <div className="w-full max-w-[380px] bg-white dark:bg-black/30 border border-[#F38E26]/20 dark:border-white/10 p-10 rounded-[40px] backdrop-blur-3xl shadow-2xl animate-in zoom-in duration-500">
           <div className="flex justify-center mb-8">
-            <img src={isDarkMode ? "/logo_dark.png" : "/logo_light.png"} alt="Koach Gym Logo" className="h-56 w-auto object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+            <img src={isDarkMode ? "/logo_dark.png" : "/logo_light.png"} alt="Koach Gym Logo" className={`${isDarkMode ? "h-52" : "h-[17rem] -my-6"} w-auto object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]`} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
             <div className="hidden p-6 rounded-2xl border border-[#F38E26]" style={{backgroundColor:'#F38E26'}}><ShieldCheck size={48} className="text-white" /></div>
           </div>
           {/* Title removed per request */}
@@ -454,7 +454,7 @@ export default function AdminDashboard() {
       {(isModalOpen || isPaymentModalOpen) && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-10 bg-black/50 dark:bg-black/90 backdrop-blur-md overflow-y-auto">
           {isModalOpen && (
-            <div className={`bg-white dark:bg-neutral-900 border border-gray-200 dark:border-white/10 p-8 rounded-[40px] w-full ${modalType === 'workout' || modalType === 'history' ? 'max-w-4xl' : 'max-w-md'} shadow-2xl animate-in zoom-in duration-300`}>
+            <div className={`bg-white dark:bg-[#1b2435] border border-gray-200 dark:border-white/10 p-8 rounded-[40px] w-full ${modalType === 'workout' || modalType === 'history' ? 'max-w-4xl' : 'max-w-md'} shadow-2xl animate-in zoom-in duration-300`}>
               <div className="flex justify-between items-center mb-6"><h2 className="text-lg font-black uppercase tracking-widest text-orange-500">{modalType}</h2><button onClick={() => setIsModalOpen(false)}><X size={20} className="text-gray-400 hover:text-black dark:text-white/20 dark:hover:text-white transition-colors"/></button></div>
               <div className="space-y-3">
                 {modalType === 'history' && (
@@ -577,7 +577,7 @@ export default function AdminDashboard() {
       <aside className="w-40 border-r border-white/5 bg-[#141b29] flex flex-col p-4 shrink-0">
         <div className="flex flex-col gap-4 mb-8">
           <div className="flex justify-center mb-2">
-            <img src="/logo_dark.png" alt="Logo" className="w-32 h-32 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+            <img src="/logo_dark.png" alt="Logo" className="h-28 w-auto object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
             <div className="hidden w-24 h-24 rounded-xl flex items-center justify-center border border-[#F38E26]" style={{backgroundColor:'#F38E26'}}><Brain size={36} className="text-white" /></div>
           </div>
           <button onClick={() => setIsDarkMode(!isDarkMode)} className="w-full flex items-center justify-center gap-2 p-2 bg-white/5 border border-white/10 rounded-xl text-white shadow-sm transition-all hover:scale-[1.02]">
@@ -634,7 +634,7 @@ function PaymentModal({ plans, member, onPay, onClose }: any) {
   const [amount, setAmount] = useState(planObj?.price || 0);
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-white/10 p-10 rounded-[40px] w-full max-w-md shadow-3xl animate-in zoom-in duration-300">
+    <div className="bg-white dark:bg-[#1b2435] border border-gray-200 dark:border-white/10 p-10 rounded-[40px] w-full max-w-md shadow-3xl animate-in zoom-in duration-300">
       <h2 className="text-xl font-black mb-2 uppercase tracking-widest text-green-500 text-center">Facturación en Recepción</h2>
       <p className="text-[10px] text-gray-500 dark:text-white/20 text-center uppercase font-black mb-8">Socio: {member.name}</p>
       
