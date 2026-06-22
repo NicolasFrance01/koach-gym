@@ -116,17 +116,17 @@ export default function UserApp() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center p-8 font-sans">
-        <div className="w-full max-w-sm bg-neutral-900/50 border border-white/10 p-10 rounded-[40px] backdrop-blur-2xl shadow-3xl space-y-10">
+      <div className="min-h-screen bg-[#212C40] flex flex-col items-center justify-center p-8 font-sans">
+        <div className="w-full max-w-sm bg-black/30 border border-white/10 p-10 rounded-[40px] backdrop-blur-2xl shadow-3xl space-y-10">
           <div className="text-center">
             <div className="w-24 h-24 rounded-[2.5rem] mx-auto flex items-center justify-center mb-8 animate-pulse" style={{backgroundColor:'#F38E26', boxShadow:'0 20px 60px rgba(243,142,38,0.4)'}}><Brain size={48} className="text-white" /></div>
             <h1 className="text-5xl font-black text-white tracking-tighter mb-2">KOACH APP</h1>
             <p className="text-white/20 text-xs font-black uppercase tracking-[0.4em]">Personal Fitness OS</p>
           </div>
           <form onSubmit={handleLogin} className="space-y-6">
-             <div className="space-y-2"><label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-6">Documento</label><input type="text" className="w-full bg-white/5 border border-white/10 rounded-[2rem] py-5 px-8 text-white outline-none focus:border-orange-500 transition-all text-center font-black" value={dni} onChange={e=>setDni(e.target.value)} required /></div>
-             <div className="space-y-2"><label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-6">Password</label><input type="password" placeholder="••••••••" className="w-full bg-white/5 border border-white/10 rounded-[2rem] py-5 px-8 text-white outline-none focus:border-orange-500 transition-all text-center font-black" value={password} onChange={e=>setPassword(e.target.value)} required /></div>
-             <button type="submit" disabled={isLoading} className="w-full py-5 text-white rounded-[2rem] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all text-sm disabled:opacity-50" style={{backgroundColor:'#F38E26', boxShadow:'0 20px 40px rgba(243,142,38,0.3)'}}>
+             <div className="space-y-2"><label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-6">Documento</label><input type="text" className="w-full bg-white/5 border border-white/10 rounded-[2rem] py-5 px-8 text-white outline-none focus:border-[#F38E26] transition-all text-center font-black" value={dni} onChange={e=>setDni(e.target.value)} required /></div>
+             <div className="space-y-2"><label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-6">Password</label><input type="password" placeholder="••••••••" className="w-full bg-white/5 border border-white/10 rounded-[2rem] py-5 px-8 text-white outline-none focus:border-[#F38E26] transition-all text-center font-black" value={password} onChange={e=>setPassword(e.target.value)} required /></div>
+             <button type="submit" disabled={isLoading} className="w-full py-5 text-white bg-[#6E8AC9] border border-[#F38E26] rounded-[2rem] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all text-sm disabled:opacity-50 shadow-lg shadow-[#F38E26]/10">
                {isLoading ? "Ingresando..." : "Entrar"}
              </button>
           </form>
@@ -257,11 +257,11 @@ export default function UserApp() {
                    <h4 className="text-xs font-black uppercase text-white/40 tracking-widest flex items-center gap-2"><Lock size={14}/> Cambiar Contraseña</h4>
                    <div className="space-y-3">
                       <input type="password" placeholder="Nueva Contraseña" className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-xs outline-none focus:border-blue-500" value={newPassword} onChange={e=>setNewPassword(e.target.value)} />
-                      <button onClick={handleChangePassword} disabled={isLoading || !newPassword} className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-blue-500/20 disabled:opacity-50">Actualizar Contraseña</button>
+                      <button onClick={handleChangePassword} disabled={isLoading || !newPassword} className="w-full py-4 bg-[#6E8AC9] text-white border border-[#F38E26] rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl disabled:opacity-50 hover:scale-[1.01] transition-all">Actualizar Contraseña</button>
                    </div>
                 </div>
 
-                <button onClick={()=>setIsAuthenticated(false)} className="w-full mt-10 py-4 bg-red-500/10 text-red-500 rounded-3xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">Cerrar Sesión</button>
+                <button onClick={()=>setIsAuthenticated(false)} className="w-full mt-10 py-4 bg-[#212C40] text-white border border-[#F38E26] rounded-3xl font-black text-[10px] uppercase tracking-widest hover:scale-[1.01] transition-all">Cerrar Sesión</button>
              </div>
           </div>
         );
@@ -294,7 +294,7 @@ export default function UserApp() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white font-sans p-6 pb-32 overflow-x-hidden">
+    <div className="min-h-screen bg-[#212C40] text-white font-sans p-6 pb-32 overflow-x-hidden">
       {isBookingModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-8 animate-in fade-in duration-300">
            <div className="bg-neutral-900 border border-white/10 p-10 rounded-[50px] w-full max-w-sm shadow-3xl">

@@ -81,7 +81,7 @@ export default function CheckInPanel({ className = '' }: { className?: string })
         <button 
           type="submit" 
           disabled={loading}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-xl shadow-lg transition-all hover:scale-105" style={{backgroundColor:'#F38E26', boxShadow:'0 8px 20px rgba(243,142,38,0.3)'}}
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-xl shadow-lg transition-all hover:scale-105 bg-[#6E8AC9] text-white border border-[#F38E26]"
         >
           {loading ? (
              <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin" />

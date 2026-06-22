@@ -45,14 +45,14 @@ export default function KioskView() {
   }, [currentMember, setCurrentMember]);
 
   return (
-    <div className="flex h-screen bg-neutral-950 text-white overflow-hidden font-sans selection:bg-orange-500/30">
+    <div className="flex h-screen bg-[#212C40] text-white overflow-hidden font-sans selection:bg-orange-500/30">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 to-red-900/10 pointer-events-none" />
       
       <div className="w-[30%] min-w-[350px] flex-shrink-0 z-10 border-r border-white/5 bg-black/40 backdrop-blur-3xl shadow-2xl shadow-black/50">
         <CheckInPanel className="h-full bg-transparent" />
       </div>
 
-      <div className="flex-1 flex flex-col z-0 relative bg-neutral-900">
+      <div className="flex-1 flex flex-col z-0 relative bg-[#212C40]">
         <CameraPanel className="h-full w-full object-cover" />
         
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent flex items-center justify-between pointer-events-none">
@@ -68,7 +68,7 @@ export default function KioskView() {
 
       {window.location.protocol === 'https:' && !window.location.hostname.includes('127.0.0.1') && !window.location.hostname.includes('localhost') && (
         <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-8">
-          <div className="max-w-md w-full bg-neutral-900 border border-red-500/30 rounded-[40px] p-10 text-center shadow-2xl">
+          <div className="max-w-md w-full bg-[#212C40] border border-red-500/30 rounded-[40px] p-10 text-center shadow-2xl">
             <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-8 text-red-500">
               <AlertTriangle size={48} />
             </div>
@@ -81,7 +81,7 @@ export default function KioskView() {
             </div>
             <button 
               onClick={() => window.location.href = 'http://localhost:5173'}
-              className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-neutral-200 transition-all"
+              className="w-full py-4 bg-[#6E8AC9] text-white border border-[#F38E26] font-bold rounded-2xl hover:scale-[1.02] transition-all"
             >
               Ir al Kiosko Local
             </button>

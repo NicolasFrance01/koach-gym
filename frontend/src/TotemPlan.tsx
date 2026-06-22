@@ -116,9 +116,9 @@ function NumPad({ value, onChange, onSubmit, loading, error, isDark }:
       <button
         onClick={onSubmit}
         disabled={value.length < 4 || loading}
-        className="w-full h-16 rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed
-          text-white text-xl font-black tracking-wide transition-all active:scale-95 shadow-lg"
-        style={{backgroundColor:'#F38E26', boxShadow:'0 8px 25px rgba(243,142,38,0.3)'}}
+        className={`w-full h-16 rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed
+          text-xl font-black tracking-wide transition-all active:scale-95 shadow-lg border border-[#F38E26]
+          ${isDark ? 'bg-[#6E8AC9] text-[#212C40]' : 'bg-[#212C40] text-white'}`}
       >
         {loading ? 'Buscando...' : 'INGRESAR →'}
       </button>
@@ -355,10 +355,10 @@ export default function TotemPlan() {
   const statusCfg = member ? (STATUS_CFG[member.status] ?? STATUS_CFG['INACTIVO']) : null;
 
   // ─── Theme classes ────────────────────────────────────────────────────────
-  const bg    = isDark ? 'bg-neutral-950'       : 'bg-gray-50';
-  const card  = isDark ? 'bg-neutral-900 border-white/10' : 'bg-white border-gray-200 shadow-sm';
-  const text  = isDark ? 'text-white'            : 'text-gray-900';
-  const muted = isDark ? 'text-white/50'         : 'text-gray-500';
+  const bg    = isDark ? 'bg-[#212C40]'         : 'bg-[#6E8AC9]';
+  const card  = isDark ? 'bg-black/30 border-white/10' : 'bg-white border-[#6E8AC9]/30 text-gray-900 shadow-sm';
+  const text  = isDark ? 'text-white'            : 'text-white';
+  const muted = isDark ? 'text-white/50'         : 'text-white/70';
 
   return (
     <div className={`min-h-screen ${bg} ${text} font-['Outfit',sans-serif] transition-colors duration-300`}>
@@ -537,8 +537,7 @@ export default function TotemPlan() {
                             onClick={handleSave}
                             disabled={saving}
                             whileTap={{ scale: 0.95 }}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg text-white"
-                            style={{backgroundColor: saveOk ? '#10b981' : '#F38E26', boxShadow: saveOk ? '0 8px 25px rgba(16,185,129,0.3)' : '0 8px 25px rgba(243,142,38,0.3)'}}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg border border-[#F38E26] ${saveOk ? 'bg-[#10b981] border-green-500 text-white' : isDark ? 'bg-[#6E8AC9] text-[#212C40]' : 'bg-[#212C40] text-white'}`}
                           >
                             {saving ? <Spinner /> : saveOk ? <CheckCircle size={16} /> : <Save size={16} />}
                             {saving ? 'Guardando…' : saveOk ? '¡Guardado!' : 'Guardar'}
