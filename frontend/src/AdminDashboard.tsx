@@ -301,7 +301,7 @@ export default function AdminDashboard() {
 
     try {
       const bgImg = await loadImage('/favicon.png');
-      const gState = new (doc as any).GState({opacity: 0.05});
+      const gState = new (doc as any).GState({opacity: 0.10});
       doc.setGState(gState);
       // Dibujar marca de agua centrada
       const wmSize = 160;
@@ -358,7 +358,7 @@ export default function AdminDashboard() {
     const stampStartX = 105 - (textW / 2) * cos45;
     const stampStartY = tableCenterY + (textW / 2) * sin45;
 
-    doc.setGState(new (doc as any).GState({opacity: 0.13}));
+    doc.setGState(new (doc as any).GState({opacity: 0.25}));
     doc.setTextColor(243, 142, 38);
     doc.text('PAGADO', stampStartX, stampStartY, { angle: 45 });
     doc.setGState(new (doc as any).GState({opacity: 1.0}));
