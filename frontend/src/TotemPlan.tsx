@@ -394,7 +394,7 @@ export default function TotemPlan() {
               transition={{ delay: 0.1 }}
               className="mb-8 flex flex-col items-center gap-4"
             >
-              <img src={isDark ? '/logo_dark.png' : '/logo_light.png'} alt="Koach Gym Logo" className="w-24 h-24 object-contain drop-shadow-lg" />
+              <img src={isDark ? '/logo_dark.png' : '/logo_light.png'} alt="Koach Gym Logo" className="w-44 h-44 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]" />
               <div className="text-center">
                 <h1 className="text-3xl font-black tracking-tight" style={{color:'#F38E26'}}>KOACH GYM</h1>
                 <p className={`text-sm font-semibold tracking-[0.2em] uppercase mt-1 ${muted}`}>Totem de Entrenamiento</p>

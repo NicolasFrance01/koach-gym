@@ -421,12 +421,12 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#6E8AC9] dark:bg-[#212C40] flex flex-col items-center justify-center p-4 overflow-hidden transition-colors duration-300">
-        <div className="absolute top-4 right-4"><button onClick={() => setIsDarkMode(!isDarkMode)} className="p-3 bg-[#6E8AC9]/20 dark:bg-white/5 border border-white/20 rounded-full text-white shadow-lg transition-all">{isDarkMode ? <Sun size={18}/> : <Moon size={18}/>}</button></div>
-        <div className="w-full max-w-[380px] bg-white dark:bg-black/30 border border-white/20 p-10 rounded-[40px] backdrop-blur-3xl shadow-2xl animate-in zoom-in duration-500">
-          <div className="flex justify-center mb-6">
-            <img src={isDarkMode ? "/logo_dark.png" : "/logo_light.png"} alt="Koach Gym Logo" className="h-24 w-auto object-contain drop-shadow-xl" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
-            <div className="hidden p-4 rounded-2xl shadow-xl" style={{backgroundColor:'#F38E26', boxShadow:'0 20px 40px rgba(243,142,38,0.3)'}}><ShieldCheck size={32} className="text-black dark:text-white" /></div>
+      <div className="min-h-screen bg-[#F5F8FD] dark:bg-[#212C40] flex flex-col items-center justify-center p-4 overflow-hidden transition-colors duration-300">
+        <div className="absolute top-4 right-4"><button onClick={() => setIsDarkMode(!isDarkMode)} className="p-3 bg-[#6E8AC9]/10 dark:bg-white/5 border border-white/20 rounded-full text-black dark:text-white shadow-lg transition-all">{isDarkMode ? <Sun size={18}/> : <Moon size={18}/>}</button></div>
+        <div className="w-full max-w-[380px] bg-white dark:bg-black/30 border border-[#F38E26]/20 dark:border-white/10 p-10 rounded-[40px] backdrop-blur-3xl shadow-2xl animate-in zoom-in duration-500">
+          <div className="flex justify-center mb-8">
+            <img src={isDarkMode ? "/logo_dark.png" : "/logo_light.png"} alt="Koach Gym Logo" className="h-56 w-auto object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+            <div className="hidden p-6 rounded-2xl border border-[#F38E26]" style={{backgroundColor:'#F38E26'}}><ShieldCheck size={48} className="text-white" /></div>
           </div>
           {/* Title removed per request */}
           
@@ -438,10 +438,10 @@ export default function AdminDashboard() {
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
-            <input type="text" placeholder="Usuario" className="w-full bg-[#6E8AC9]/5 dark:bg-black/40 border border-[#6E8AC9]/25 dark:border-white/10 rounded-2xl py-4 px-6 text-black dark:text-white outline-none transition-all text-center text-xs placeholder:text-gray-400 dark:placeholder:text-white/40 focus:border-[#F38E26] focus:ring-1 focus:ring-[#F38E26]" style={{'--tw-ring-color':'#F38E26'} as any} onFocus={e=>{e.currentTarget.style.borderColor='#F38E26'}} onBlur={e=>{e.currentTarget.style.borderColor=''}} value={loginUser} onChange={(e) => setLoginUser(e.target.value)} required />
-            <input type="password" placeholder="Contraseña" className="w-full bg-[#6E8AC9]/5 dark:bg-black/40 border border-[#6E8AC9]/25 dark:border-white/10 rounded-2xl py-4 px-6 text-black dark:text-white outline-none transition-all text-center text-xs placeholder:text-gray-400 dark:placeholder:text-white/40 focus:border-[#F38E26] focus:ring-1 focus:ring-[#F38E26]" onFocus={e=>{e.currentTarget.style.borderColor='#F38E26'}} onBlur={e=>{e.currentTarget.style.borderColor=''}} value={loginPass} onChange={(e) => setLoginPass(e.target.value)} required />
+            <input type="text" placeholder="Usuario" className="w-full bg-[#6E8AC9]/5 dark:bg-black/40 border-2 border-[#F38E26] rounded-2xl py-4 px-6 text-black dark:text-white outline-none transition-all text-center text-xs placeholder:text-gray-400 dark:placeholder:text-white/40 focus:ring-2 focus:ring-[#F38E26]/20" value={loginUser} onChange={(e) => setLoginUser(e.target.value)} required />
+            <input type="password" placeholder="Contraseña" className="w-full bg-[#6E8AC9]/5 dark:bg-black/40 border-2 border-[#F38E26] rounded-2xl py-4 px-6 text-black dark:text-white outline-none transition-all text-center text-xs placeholder:text-gray-400 dark:placeholder:text-white/40 focus:ring-2 focus:ring-[#F38E26]/20" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} required />
             
-            <button type="submit" className="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all bg-[#212C40] text-white border border-[#F38E26] dark:bg-[#6E8AC9] dark:text-[#212C40] hover:scale-[1.02] shadow-lg shadow-[#F38E26]/10">Ingresar</button>
+            <button type="submit" className="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all bg-[#212C40] text-white border border-[#F38E26] dark:bg-[#6E8AC9] dark:text-[#212C40] hover:scale-[1.01]">Ingresar</button>
           </form>
         </div>
       </div>
@@ -449,7 +449,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#6E8AC9] dark:bg-[#212C40] text-black dark:text-[#e0e0e0] font-sans flex overflow-hidden text-[9px] transition-colors duration-300">
+    <div className="min-h-screen bg-[#F5F8FD] dark:bg-[#212C40] text-black dark:text-[#e0e0e0] font-sans flex overflow-hidden text-[9px] transition-colors duration-300">
       {/* Portaled Modals (Centered in Viewport) */}
       {(isModalOpen || isPaymentModalOpen) && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-10 bg-black/50 dark:bg-black/90 backdrop-blur-md overflow-y-auto">
@@ -574,13 +574,13 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      <aside className="w-40 border-r border-gray-200 dark:border-white/5 bg-[#6E8AC9]/30 dark:bg-black/20 backdrop-blur-3xl flex flex-col p-4 shrink-0">
+      <aside className="w-40 border-r border-white/5 bg-[#141b29] flex flex-col p-4 shrink-0">
         <div className="flex flex-col gap-4 mb-8">
           <div className="flex justify-center mb-2">
-            <img src={isDarkMode ? "/logo_dark.png" : "/logo_light.png"} alt="Logo" className="w-16 h-16 object-contain drop-shadow-md" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
-            <div className="hidden w-16 h-16 rounded-xl flex items-center justify-center shadow-lg" style={{backgroundColor:'#F38E26'}}><Brain size={24} className="text-white" /></div>
+            <img src="/logo_dark.png" alt="Logo" className="w-32 h-32 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+            <div className="hidden w-24 h-24 rounded-xl flex items-center justify-center border border-[#F38E26]" style={{backgroundColor:'#F38E26'}}><Brain size={36} className="text-white" /></div>
           </div>
-          <button onClick={() => setIsDarkMode(!isDarkMode)} className="w-full flex items-center justify-center gap-2 p-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-black dark:text-white shadow-sm transition-all hover:scale-[1.02]" style={isDarkMode ? {borderColor:'#212C40'} : {}}>
+          <button onClick={() => setIsDarkMode(!isDarkMode)} className="w-full flex items-center justify-center gap-2 p-2 bg-white/5 border border-white/10 rounded-xl text-white shadow-sm transition-all hover:scale-[1.02]">
             {isDarkMode ? <Sun size={12}/> : <Moon size={12}/>}
             <span className="text-[9px] font-black uppercase tracking-widest">{isDarkMode ? 'Claro' : 'Oscuro'}</span>
           </button>
@@ -600,19 +600,19 @@ export default function AdminDashboard() {
 
           {userRole === 'gerente' && (
             <>
-              <div className="h-px bg-gray-200 dark:bg-white/5 my-4" />
+              <div className="h-px bg-white/5 my-4" />
               <SidebarItem icon={<DollarSign size={14} />} label="Finanzas" active={activeTab === 'Finanzas'} onClick={() => setActiveTab('Finanzas')} />
             </>
           )}
         </nav>
-        <button onClick={() => { localStorage.removeItem('gym_session'); localStorage.removeItem('gym_role'); localStorage.removeItem('gym_user'); setIsAuthenticated(false); setLoggedUser(null); }} className="w-full p-2 bg-red-500/10 hover:bg-red-500 rounded-xl text-red-500 hover:text-black dark:hover:text-white text-[9px] font-black uppercase tracking-widest transition-all mt-4">Salir</button>
+        <button onClick={() => { localStorage.removeItem('gym_session'); localStorage.removeItem('gym_role'); localStorage.removeItem('gym_user'); setIsAuthenticated(false); setLoggedUser(null); }} className="w-full p-2 bg-red-500/10 hover:bg-red-500 rounded-xl text-red-500 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all mt-4">Salir</button>
       </aside>
 
-      <main className="flex-1 overflow-y-auto p-6 relative bg-[#6E8AC9] dark:bg-[#212C40]">
+      <main className="flex-1 overflow-y-auto p-6 relative bg-[#F5F8FD] dark:bg-[#212C40]">
         <header className="flex items-center justify-between mb-8 max-w-full gap-4">
-          <div className="min-w-0"><h2 className="text-xl font-black text-black dark:text-white tracking-tighter uppercase truncate">{activeTab}</h2><p className="text-[7px] uppercase font-black tracking-[0.3em]" style={{color:'#212C40', textShadow: '0 0 1px rgba(255,255,255,0.1)'}}>Koach Gym</p></div>
+          <div className="min-w-0"><h2 className="text-xl font-black text-black dark:text-white tracking-tighter uppercase truncate">{activeTab}</h2><p className="text-[7px] uppercase font-black tracking-[0.3em]" style={{color:'#6E8AC9'}}>Koach Gym</p></div>
 
-          <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 rounded-xl font-black text-[8px] uppercase tracking-widest hover:scale-105 transition-all whitespace-nowrap bg-[#212C40] text-white dark:bg-[#6E8AC9] dark:text-[#212C40] border border-[#F38E26] shadow-md shadow-[#F38E26]/10"><Download size={14}/> Reporte Global</button>
+          <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 rounded-xl font-black text-[8px] uppercase tracking-widest hover:scale-105 transition-all whitespace-nowrap bg-[#212C40] text-white dark:bg-[#6E8AC9] dark:text-[#212C40] border border-[#F38E26] shadow-sm"><Download size={14}/> Reporte Global</button>
         </header>
         <div className="max-w-full overflow-x-hidden">
         {error && (
@@ -759,7 +759,7 @@ function BillingModule({ members, onDeletePayment }: any) {
 }
 
 function SidebarItem({ icon, label, active = false, onClick }: any) {
-  return <div onClick={onClick} style={active ? {backgroundColor:'#F38E26', boxShadow:'0 4px 15px rgba(243,142,38,0.3)'} : {}} className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all cursor-pointer ${active ? 'text-white' : 'text-gray-500 dark:text-white/20 hover:text-black dark:text-white hover:bg-white dark:bg-white/5'}`}>{icon}<span className="text-[9px] font-black uppercase tracking-widest">{label}</span></div>;
+  return <div onClick={onClick} style={active ? {backgroundColor:'#F38E26'} : {}} className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all cursor-pointer ${active ? 'text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}`}>{icon}<span className="text-[9px] font-black uppercase tracking-widest">{label}</span></div>;
 }
 
 function SummaryCard({ title, value, icon, onClick, color }: any) {
@@ -1101,7 +1101,7 @@ function ProfileModule({ user, onSave }: any) {
             <label className="text-[9px] text-gray-500 dark:text-white/20 uppercase font-black px-2">Nueva Contraseña</label>
             <input type="text" placeholder="Ingresa tu nueva clave..." className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl p-4 text-black dark:text-white text-xs" value={password} onChange={e=>setPassword(e.target.value)} />
          </div>
-         <button className="w-full py-4 rounded-xl font-black text-white text-xs uppercase transition-all shadow-lg mt-4" style={{backgroundColor:'#F38E26', boxShadow:'0 10px 25px rgba(243,142,38,0.2)'}} onMouseEnter={e=>{e.currentTarget.style.backgroundColor='#e07d18'}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor='#F38E26'}} onClick={() => onSave(password)}>Guardar Cambios</button>
+         <button className="w-full py-4 rounded-xl font-black text-xs uppercase transition-all mt-4 bg-[#212C40] text-white border border-[#F38E26] dark:bg-[#6E8AC9] dark:text-[#212C40] hover:scale-[1.01]" onClick={() => onSave(password)}>Guardar Cambios</button>
       </div>
     </div>
   );

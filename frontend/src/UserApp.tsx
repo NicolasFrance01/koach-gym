@@ -1,4 +1,4 @@
-import { Zap, Brain, Dumbbell, Clock, Check, Play, LayoutDashboard, User, TrendingUp, ArrowUpRight, X, Lock } from 'lucide-react';
+import { Zap, Dumbbell, Clock, Check, Play, LayoutDashboard, User, TrendingUp, ArrowUpRight, X, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { Tooltip, ResponsiveContainer, CartesianGrid, XAxis, YAxis, LineChart, Line, Legend } from 'recharts';
 
@@ -119,14 +119,13 @@ export default function UserApp() {
       <div className="min-h-screen bg-[#212C40] flex flex-col items-center justify-center p-8 font-sans">
         <div className="w-full max-w-sm bg-black/30 border border-white/10 p-10 rounded-[40px] backdrop-blur-2xl shadow-3xl space-y-10">
           <div className="text-center">
-            <div className="w-24 h-24 rounded-[2.5rem] mx-auto flex items-center justify-center mb-8 animate-pulse" style={{backgroundColor:'#F38E26', boxShadow:'0 20px 60px rgba(243,142,38,0.4)'}}><Brain size={48} className="text-white" /></div>
-            <h1 className="text-5xl font-black text-white tracking-tighter mb-2">KOACH APP</h1>
+            <img src="/logo_dark.png" alt="Koach Gym Logo" className="h-44 w-auto mx-auto object-contain mb-8 filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]" />
             <p className="text-white/20 text-xs font-black uppercase tracking-[0.4em]">Personal Fitness OS</p>
           </div>
           <form onSubmit={handleLogin} className="space-y-6">
-             <div className="space-y-2"><label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-6">Documento</label><input type="text" className="w-full bg-white/5 border border-white/10 rounded-[2rem] py-5 px-8 text-white outline-none focus:border-[#F38E26] transition-all text-center font-black" value={dni} onChange={e=>setDni(e.target.value)} required /></div>
-             <div className="space-y-2"><label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-6">Password</label><input type="password" placeholder="••••••••" className="w-full bg-white/5 border border-white/10 rounded-[2rem] py-5 px-8 text-white outline-none focus:border-[#F38E26] transition-all text-center font-black" value={password} onChange={e=>setPassword(e.target.value)} required /></div>
-             <button type="submit" disabled={isLoading} className="w-full py-5 text-white bg-[#6E8AC9] border border-[#F38E26] rounded-[2rem] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all text-sm disabled:opacity-50 shadow-lg shadow-[#F38E26]/10">
+             <div className="space-y-2"><label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-6">Documento</label><input type="text" className="w-full bg-white/5 border-2 border-[#F38E26] rounded-[2rem] py-5 px-8 text-white outline-none transition-all text-center font-black" value={dni} onChange={e=>setDni(e.target.value)} required /></div>
+             <div className="space-y-2"><label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-6">Password</label><input type="password" placeholder="••••••••" className="w-full bg-white/5 border-2 border-[#F38E26] rounded-[2rem] py-5 px-8 text-white outline-none transition-all text-center font-black" value={password} onChange={e=>setPassword(e.target.value)} required /></div>
+             <button type="submit" disabled={isLoading} className="w-full py-5 text-white bg-[#6E8AC9] border border-[#F38E26] rounded-[2rem] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all text-sm disabled:opacity-50 shadow-md">
                {isLoading ? "Ingresando..." : "Entrar"}
              </button>
           </form>
@@ -224,7 +223,7 @@ export default function UserApp() {
                         days.push(
                           <div key={i} 
                             onClick={() => { setSelectedDay(i); setIsBookingModalOpen(true); }} 
-                            className={`h-12 flex items-center justify-center rounded-2xl text-sm font-black cursor-pointer transition-all border ${isBooked ? 'bg-blue-600 border-blue-500 text-white shadow-xl shadow-blue-500/30' : 'bg-white/5 border-white/5 text-white/20 hover:border-white/20 hover:text-white'}`}>
+                            className={`h-12 flex items-center justify-center rounded-2xl text-sm font-black cursor-pointer transition-all border ${isBooked ? 'bg-blue-600 border-blue-500 text-white shadow-md' : 'bg-white/5 border-white/5 text-white/20 hover:border-white/20 hover:text-white'}`}>
                             {i}
                           </div>
                         );
@@ -257,7 +256,7 @@ export default function UserApp() {
                    <h4 className="text-xs font-black uppercase text-white/40 tracking-widest flex items-center gap-2"><Lock size={14}/> Cambiar Contraseña</h4>
                    <div className="space-y-3">
                       <input type="password" placeholder="Nueva Contraseña" className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-xs outline-none focus:border-blue-500" value={newPassword} onChange={e=>setNewPassword(e.target.value)} />
-                      <button onClick={handleChangePassword} disabled={isLoading || !newPassword} className="w-full py-4 bg-[#6E8AC9] text-white border border-[#F38E26] rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl disabled:opacity-50 hover:scale-[1.01] transition-all">Actualizar Contraseña</button>
+                      <button onClick={handleChangePassword} disabled={isLoading || !newPassword} className="w-full py-4 bg-[#6E8AC9] text-white border border-[#F38E26] rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-md disabled:opacity-50 hover:scale-[1.01] transition-all">Actualizar Contraseña</button>
                    </div>
                 </div>
 
@@ -270,21 +269,21 @@ export default function UserApp() {
           <div className="space-y-10 animate-in fade-in duration-1000">
              <header className="flex items-center justify-between">
                 <div><h2 className="text-4xl font-black text-white tracking-tighter">¡Hola, {userData.name.split(' ')[0]}! 👋</h2><p className="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-1">Estatus: Bestia en Entrenamiento</p></div>
-                <div onClick={()=>setActiveTab('Profile')} className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 active:scale-90 transition-all shadow-xl"><User size={24} className="text-blue-500" /></div>
+                <div onClick={()=>setActiveTab('Profile')} className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 active:scale-90 transition-all"><User size={24} className="text-blue-500" /></div>
              </header>
              <section className="bg-gradient-to-br from-neutral-900 to-black p-12 rounded-[60px] border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.8)] text-center relative overflow-hidden group">
                  <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_-20%,rgba(110,138,201,0.25),transparent_70%)]" />
                  <p className="text-xs uppercase tracking-[0.5em] font-black mb-10 relative z-10 animate-pulse" style={{color:'#F38E26'}}>Racha de Fuego</p>
-                <div className="relative z-10 flex items-center justify-center gap-6 mb-10"><div className="p-5 bg-orange-500/10 rounded-full text-orange-500 shadow-2xl animate-bounce"><Zap size={40} strokeWidth={3} /></div><span className="text-9xl font-black tracking-tighter text-white drop-shadow-[0_20px_50px_rgba(255,255,255,0.2)]">{userData.streak}</span></div>
+                <div className="relative z-10 flex items-center justify-center gap-6 mb-10"><div className="p-5 bg-orange-500/10 rounded-full text-orange-500"><Zap size={40} strokeWidth={3} /></div><span className="text-9xl font-black tracking-tighter text-white">{userData.streak}</span></div>
                  <div onClick={()=>setActiveTab('Evolution')} className="py-5 px-10 rounded-3xl border text-[10px] uppercase font-black tracking-widest hover:text-white transition-all cursor-pointer relative z-10 mx-auto flex items-center justify-center gap-3" style={{backgroundColor:'rgba(243,142,38,0.1)', borderColor:'rgba(243,142,38,0.2)', color:'#F38E26'}} onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.backgroundColor='#F38E26';(e.currentTarget as HTMLDivElement).style.color='#fff'}} onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.backgroundColor='rgba(243,142,38,0.1)';(e.currentTarget as HTMLDivElement).style.color='#F38E26'}}>Explorar Evolución <ArrowUpRight size={16}/></div>
              </section>
              <div className="grid grid-cols-2 gap-6 pb-10">
-                 <button onClick={()=>setActiveTab('Training')} className="p-8 bg-neutral-900 border border-white/5 rounded-[50px] flex flex-col gap-6 group text-left shadow-2xl transition-all" onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(243,142,38,0.3)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'}}>
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-lg" style={{backgroundColor:'rgba(243,142,38,0.1)', color:'#F38E26'}} onMouseEnter={e=>{e.currentTarget.style.backgroundColor='#F38E26';e.currentTarget.style.color='#fff'}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor='rgba(243,142,38,0.1)';e.currentTarget.style.color='#F38E26'}}><Dumbbell size={28}/></div>
+                 <button onClick={()=>setActiveTab('Training')} className="p-8 bg-neutral-900 border border-white/5 rounded-[50px] flex flex-col gap-6 group text-left transition-all" onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(243,142,38,0.3)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'}}>
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all" style={{backgroundColor:'rgba(243,142,38,0.1)', color:'#F38E26'}} onMouseEnter={e=>{e.currentTarget.style.backgroundColor='#F38E26';e.currentTarget.style.color='#fff'}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor='rgba(243,142,38,0.1)';e.currentTarget.style.color='#F38E26'}}><Dumbbell size={28}/></div>
                    <div><p className="font-black text-2xl leading-none mb-1 uppercase">Entrenar</p><p className="text-[10px] text-white/20 font-black uppercase tracking-widest">3 Ejercicios hoy</p></div>
                 </button>
-                 <button onClick={()=>setActiveTab('Calendar')} className="p-8 bg-neutral-900 border border-white/5 rounded-[50px] flex flex-col gap-6 group text-left shadow-2xl transition-all" onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(110,138,201,0.3)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'}}>
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-lg" style={{backgroundColor:'rgba(110,138,201,0.1)', color:'#6E8AC9'}} onMouseEnter={e=>{e.currentTarget.style.backgroundColor='#6E8AC9';e.currentTarget.style.color='#fff'}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor='rgba(110,138,201,0.1)';e.currentTarget.style.color='#6E8AC9'}}><Clock size={28}/></div>
+                 <button onClick={()=>setActiveTab('Calendar')} className="p-8 bg-neutral-900 border border-white/5 rounded-[50px] flex flex-col gap-6 group text-left transition-all" onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(110,138,201,0.3)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'}}>
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all" style={{backgroundColor:'rgba(110,138,201,0.1)', color:'#6E8AC9'}} onMouseEnter={e=>{e.currentTarget.style.backgroundColor='#6E8AC9';e.currentTarget.style.color='#fff'}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor='rgba(110,138,201,0.1)';e.currentTarget.style.color='#6E8AC9'}}><Clock size={28}/></div>
                    <div><p className="font-black text-2xl leading-none mb-1 uppercase">Agendar</p><p className="text-[10px] text-white/20 font-black uppercase tracking-widest">{bookings.length} Sesiones</p></div>
                 </button>
              </div>
@@ -297,7 +296,7 @@ export default function UserApp() {
     <div className="min-h-screen bg-[#212C40] text-white font-sans p-6 pb-32 overflow-x-hidden">
       {isBookingModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-8 animate-in fade-in duration-300">
-           <div className="bg-neutral-900 border border-white/10 p-10 rounded-[50px] w-full max-w-sm shadow-3xl">
+           <div className="bg-neutral-900 border border-white/10 p-10 rounded-[50px] w-full max-w-sm">
               <div className="flex justify-between items-center mb-10"><h3 className="text-2xl font-black uppercase tracking-tighter">Día {selectedDay}</h3><button onClick={()=>setIsBookingModalOpen(false)}><X size={24} className="text-white/20 hover:text-white"/></button></div>
               <div className="space-y-8">
                  <div className="space-y-3"><label className="text-[10px] font-black text-white/20 uppercase tracking-widest">¿A qué hora vas?</label><input type="time" className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-xl font-black outline-none focus:border-orange-500" value={selectedTime} onChange={e=>setSelectedTime(e.target.value)} /></div>
@@ -314,7 +313,7 @@ export default function UserApp() {
                        ))}
                     </div>
                  </div>
-                 <button onClick={handleConfirmBooking} className="w-full py-5 bg-orange-500 text-white rounded-3xl font-black uppercase tracking-widest shadow-2xl shadow-orange-500/30">Confirmar Reserva</button>
+                 <button onClick={handleConfirmBooking} className="w-full py-5 bg-orange-500 text-white rounded-3xl font-black uppercase tracking-widest shadow-md hover:scale-[1.01] active:scale-95 transition-all">Confirmar Reserva</button>
               </div>
            </div>
         </div>
@@ -334,7 +333,7 @@ function NavBtn({ active, onClick, icon }: any) {
   return (
     <button onClick={onClick} className={`p-5 rounded-3xl transition-all relative`} style={{color: active ? '#F38E26' : 'rgba(255,255,255,0.1)'}} onMouseEnter={e=>{if(!active)(e.currentTarget as HTMLButtonElement).style.color='rgba(255,255,255,0.3)'}} onMouseLeave={e=>{if(!active)(e.currentTarget as HTMLButtonElement).style.color='rgba(255,255,255,0.1)'}}>
        {icon}
-       {active && <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full" style={{backgroundColor:'#F38E26', boxShadow:'0 0 15px rgba(243,142,38,0.8)'}} />}
+       {active && <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full" style={{backgroundColor:'#F38E26', boxShadow:'0 0 4px rgba(243,142,38,0.5)'}} />}
     </button>
   );
 }
