@@ -36,6 +36,7 @@ def seed():
 
     # Add Staff
     staff = [
+        models.Staff(name="Master Admin", username="master", password="Ndf010399", role="Gerente"),
         models.Staff(name="Martin Ruiz", role="Trainer"),
         models.Staff(name="Lorena Diaz", role="Reception"),
         models.Staff(name="Ricardo Vega", role="Manager")
