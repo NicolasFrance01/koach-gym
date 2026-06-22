@@ -35,6 +35,101 @@ export default function AdminDashboard() {
   const [memberCheckins, setMemberCheckins] = useState<any[]>([]);
   const [checkinStats, setCheckinStats] = useState<any>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  // License banner visibility (only visible on June 22, 2026)
+  const showBanner = (() => {
+    const today = new Date();
+    return today.getFullYear() === 2026 && today.getMonth() === 5 && today.getDate() === 22;
+  })();
+
+  const viewTermsPDF = async () => {
+    const doc = new jsPDF();
+    
+    const loadImage = (src: string) => new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error(`Failed to load ${src}`));
+    });
+
+    try {
+      // Load Images
+      const [watermarkImg, logoImg] = await Promise.all([
+        loadImage("/favicon.png"),
+        loadImage("/logo_B.png")
+      ]);
+
+      // Background Watermark (Favicon)
+      const gState = new (doc as any).GState({ opacity: 0.05 });
+      doc.setGState(gState);
+      doc.addImage(watermarkImg, 'PNG', 40, 80, 130, 130);
+      
+      // Restore Opacity for Header
+      doc.setGState(new (doc as any).GState({ opacity: 1.0 }));
+      doc.addImage(logoImg, 'PNG', 10, 10, 30, 30);
+    } catch (e) {
+      console.warn("No se pudieron cargar las imágenes para el PDF", e);
+    }
+
+    // Header & Title
+    doc.setFontSize(16); doc.setFont("helvetica", "bold");
+    doc.text("TÉRMINOS Y CONDICIONES DE USO", 50, 22);
+    doc.setFontSize(11); doc.text("GYM Manager — Atlascore IT Services S.A.S.", 50, 30);
+    doc.setFontSize(8); doc.setFont("helvetica", "normal");
+    doc.text("Versión: 2.0", 160, 15); doc.text("Fecha: 01/05/2026", 160, 20);
+    doc.line(10, 38, 200, 38);
+
+    // Content
+    doc.setFontSize(9); doc.setFont("helvetica", "normal");
+    const terms = [
+      { t: "1. Partes del Acuerdo", c: "El presente documento regula la relación contractual entre Atlascore IT Services S.A.S. (en adelante \"el Proveedor\") y la persona física o jurídica que contrata el acceso al software GYM Manager (en adelante \"el Cliente\"). La aceptación de estos términos —mediante registro, pago o uso efectivo del sistema— implica conformidad plena con las condiciones aquí establecidas." },
+      { t: "2. Descripción del Servicio", c: "GYM Manager es un sistema de gestión de gimnasios provisto bajo modalidad SaaS (Software as a Service), que incluye:\n- Gestión de socios: altas, bajas, modificaciones y estado de membresía.\n- Control de acceso: registro de ingresos y egresos vinculados al estado de pago del abono.\n- Gestión de pagos y abonos: facturación, vencimientos, alertas de mora.\n- Panel administrativo: reportes, estadísticas y configuración del establecimiento.\nEl alcance exacto de funcionalidades disponibles depende del plan contratado." },
+      { t: "3. Modalidad de Licencia", c: "3.1 Tipo de licencia: El acceso al software se otorga mediante licencia de uso mensual, no exclusiva, intransferible y revocable. El Cliente no adquiere derechos de propiedad sobre el software, su código fuente, base de datos estructural ni ningún componente del sistema.\n3.2 Vigencia: La licencia se activa a partir del primer pago y se renueva automáticamente cada mes calendario, salvo notificación de baja con al menos 5 días hábiles de anticipación.\n3.3 Restricciones: Queda expresamente prohibido sublicenciar, vender o ceder el acceso; realizar ingeniería inversa; usar el sistema para fines distintos a la gestión interna del establecimiento." },
+      { t: "4. Precio y Condiciones de Pago", c: "El precio de la licencia mensual será el vigente al momento de la contratación y podrá ser actualizado con un preaviso mínimo de 30 días corridos. El pago deberá realizarse dentro de los primeros 5 días de cada mes. El incumplimiento habilitará al Proveedor a suspender el acceso sin previo aviso adicional, sin perjuicio del cobro del período adeudado." },
+      { t: "5. Datos Personales de Socios", c: "5.1 El Cliente actúa como responsable del tratamiento de los datos personales de sus socios. Atlascore actúa como encargado del tratamiento, limitándose a almacenar y procesar dichos datos para prestar el servicio.\n5.2 El sistema puede almacenar: nombre y apellido, DNI/CUIT, fecha de nacimiento, datos de contacto, historial de pagos, estado de membresía y registros de acceso.\n5.3 El Cliente garantiza que cuenta con el consentimiento de sus socios and que cumple con la Ley N° 25.326 de Protección de Datos Personales.\n5.4 Atlascore se compromete a no comercializar ni divulgar los datos personales de los socios del Cliente a terceros, excepto requerimiento judicial." },
+      { t: "6. Control de Acceso", c: "El módulo de control de acceso opera en función del estado de pago de cada socio. El Proveedor no garantiza la infalibilidad del sistema ante fallas de conectividad, cortes de energía, errores de hardware del Cliente u otras circunstancias ajenas a su control. El Cliente es el único responsable de la operación y mantenimiento de los dispositivos de acceso." },
+      { t: "7. Disponibilidad y Soporte", c: "El Proveedor se compromete a mantener el servicio disponible con un nivel de uptime objetivo del 99% mensual, excluidos mantenimientos programados notificados con al menos 24 horas de anticipación. Las interrupciones no imputables al Proveedor no generan derecho a compensación. El soporte técnico se prestará por los canales y horarios informados oportunamente." },
+      { t: "8. Propiedad Intelectual", c: "Todos los derechos de propiedad intelectual sobre GYM Manager —incluyendo software, diseño, bases de datos estructurales, documentación y marca— son de titularidad exclusiva de Atlascore IT Services S.A.S.. Ninguna disposición de este acuerdo transfiere al Cliente derechos de propiedad intelectual." },
+      { t: "9. Limitación de Responsabilidad", c: "En ningún caso Atlascore IT Services S.A.S. será responsable por daños indirectos, lucro cesante, pérdida de datos, interrupción del negocio u otros daños consecuentes. La responsabilidad máxima del Proveedor frente al Cliente se limita al valor del último mes de licencia abonado." },
+      { t: "10. Suspensión y Rescisión", c: "El Proveedor podrá suspender o rescindir el acceso por: falta de pago por más de 5 días hábiles, uso en violación de los presentes términos, o instrucción judicial. El Cliente podrá rescindir notificando con al menos 5 días hábiles de anticipación. No se realizarán reembolsos de períodos parciales." },
+      { t: "11. Modificaciones a los Términos", c: "Atlascore se reserva el derecho de modificar estos términos. Los cambios serán notificados por correo electrónico o mediante aviso dentro del sistema con un mínimo de 15 días corridos de anticipación. El uso continuado del servicio tras dicho plazo implicará aceptación de los nuevos términos." },
+      { t: "12. Jurisdicción y Ley Aplicable", c: "Este acuerdo se rige por las leyes de la República Argentina. Ante cualquier controversia, las partes se someten a la jurisdicción de los Tribunales Ordinarios de la Ciudad de Córdoba, renunciando expresamente a cualquier otro fuero que pudiera corresponder." }
+    ];
+
+    let y = 46;
+    terms.forEach(item => {
+      if (y > 265) { doc.addPage(); y = 15; }
+      doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.text(item.t, 15, y); y += 5;
+      doc.setFont("helvetica", "normal"); doc.setFontSize(8);
+      const lines = doc.splitTextToSize(item.c, 180);
+      doc.text(lines, 15, y); y += (lines.length * 4.5) + 4;
+    });
+
+    // Footer
+    const pageCount = (doc as any).internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.line(10, 275, 200, 275);
+      doc.setFontSize(7); doc.setFont("helvetica", "italic"); doc.setTextColor(150);
+      doc.text("© 2026 Atlascore IT Services S.A.S. — Todos los derechos reservados", 105, 281, { align: "center" });
+      doc.text(`Página ${i} de ${pageCount}`, 105, 286, { align: "center" });
+      doc.setTextColor(0);
+    }
+
+    // Set Metadata for specific filename on download
+    doc.setProperties({
+      title: "FusionFitnessGYM_Terminos_Y_Condiciones",
+      subject: "Términos y Condiciones de Uso",
+      author: "Fusion Fitness GYM"
+    });
+
+    // Open in new tab using Blob URL
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank');
+    if (win) win.document.title = "Fusion Fitness GYM - Términos y Condiciones";
+  };
 
   useEffect(() => { if (isAuthenticated) refreshData(); }, [isAuthenticated, startDate, endDate]);
 
@@ -441,6 +536,23 @@ export default function AdminDashboard() {
             <input type="text" placeholder="Usuario" className="w-full bg-[#6E8AC9]/5 dark:bg-black/40 border-2 border-[#F38E26] rounded-2xl py-4 px-6 text-black dark:text-white outline-none transition-all text-center text-xs placeholder:text-gray-400 dark:placeholder:text-white/40 focus:ring-2 focus:ring-[#F38E26]/20" value={loginUser} onChange={(e) => setLoginUser(e.target.value)} required />
             <input type="password" placeholder="Contraseña" className="w-full bg-[#6E8AC9]/5 dark:bg-black/40 border-2 border-[#F38E26] rounded-2xl py-4 px-6 text-black dark:text-white outline-none transition-all text-center text-xs placeholder:text-gray-400 dark:placeholder:text-white/40 focus:ring-2 focus:ring-[#F38E26]/20" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} required />
             
+            <div className="flex items-center gap-2 px-2 py-1">
+              <input type="checkbox" id="terms" checked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)} className="w-3.5 h-3.5 accent-[#F38E26] cursor-pointer" />
+              <label htmlFor="terms" className="text-[9px] text-gray-500 dark:text-white/40 font-black uppercase cursor-pointer select-none">
+                Acepto los <span onClick={(e) => { e.preventDefault(); e.stopPropagation(); viewTermsPDF(); }} className="text-cyan-400 underline decoration-cyan-400 underline-offset-2 hover:text-cyan-300 transition-colors font-black">Términos y Condiciones — Atlascore IT Services S.A.S.</span>
+              </label>
+            </div>
+
+            {/* License expired notice on login */}
+            {showBanner && (
+              <div className="flex items-start gap-2 p-3 bg-green-50 dark:bg-green-950/40 border border-green-300 dark:border-green-700/60 rounded-xl animate-in fade-in duration-500">
+                <CheckCircle size={14} className="text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                <p className="text-[8px] font-black uppercase leading-relaxed text-green-700 dark:text-green-400">
+                  Suscripción de Licencia en Atlascore <span className="text-green-600 dark:text-green-300">AL DIA</span>
+                </p>
+              </div>
+            )}
+
             <button type="submit" className="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all bg-[#212C40] text-white border border-[#F38E26] dark:bg-[#6E8AC9] dark:text-[#212C40] hover:scale-[1.01]">Ingresar</button>
           </form>
         </div>
@@ -584,6 +696,15 @@ export default function AdminDashboard() {
             {isDarkMode ? <Sun size={12}/> : <Moon size={12}/>}
             <span className="text-[9px] font-black uppercase tracking-widest">{isDarkMode ? 'Claro' : 'Oscuro'}</span>
           </button>
+          {/* License expired banner — sidebar */}
+          {showBanner && (
+            <div className="flex items-start gap-1.5 p-2 bg-green-50 dark:bg-green-950/50 border border-green-300 dark:border-green-700/70 rounded-xl mt-1">
+              <CheckCircle size={10} className="text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+              <p className="text-[7px] font-black uppercase leading-snug text-green-700 dark:text-green-400">
+                Suscripción de Licencia en Atlascore <span className="text-green-600 dark:text-green-300">AL DIA</span>
+              </p>
+            </div>
+          )}
         </div>
         <nav className="space-y-1 flex-1 overflow-y-auto custom-scrollbar pr-1">
           <SidebarItem icon={<LayoutDashboard size={14} />} label="Resumen" active={activeTab === 'Resumen'} onClick={() => setActiveTab('Resumen')} />
@@ -611,6 +732,16 @@ export default function AdminDashboard() {
       <main className="flex-1 overflow-y-auto p-6 relative bg-[#F5F8FD] dark:bg-[#212C40]">
         <header className="flex items-center justify-between mb-8 max-w-full gap-4">
           <div className="min-w-0"><h2 className="text-xl font-black text-black dark:text-white tracking-tighter uppercase truncate">{activeTab}</h2><p className="text-[7px] uppercase font-black tracking-[0.3em]" style={{color:'#6E8AC9'}}>Koach Gym</p></div>
+
+          {/* License expired banner — header */}
+          {showBanner && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-950/50 border border-green-300 dark:border-green-700/70 rounded-xl flex-1 max-w-xs animate-in fade-in duration-700">
+              <CheckCircle size={12} className="text-green-600 dark:text-green-400 flex-shrink-0" />
+              <p className="text-[7px] font-black uppercase leading-snug text-green-700 dark:text-green-400">
+                Suscripción de Licencia en Atlascore <span className="text-green-600 dark:text-green-300">AL DIA</span>
+              </p>
+            </div>
+          )}
 
           <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 rounded-xl font-black text-[8px] uppercase tracking-widest hover:scale-105 transition-all whitespace-nowrap bg-[#212C40] text-white dark:bg-[#6E8AC9] dark:text-[#212C40] border border-[#F38E26] shadow-sm"><Download size={14}/> Reporte Global</button>
         </header>
