@@ -281,12 +281,12 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleExportPDF = () => {
+   const handleExportPDF = () => {
     const doc = new jsPDF();
-    doc.setFontSize(18); doc.text('GYM ATLAS: REPORTE OFICIAL', 14, 22);
+    doc.setFontSize(18); doc.text('KOACH GYM: REPORTE OFICIAL', 14, 22);
     doc.text('RESUMEN EJECUTIVO', 14, 45);
     autoTable(doc, { startY: 50, head: [['Métrica', 'Valor']], body: [['Ingresos', `$${financeData?.total_revenue || 0}`], ['Socios', members.length]] });
-    doc.save(`Reporte_Atlas.pdf`);
+    doc.save(`Reporte_Koach.pdf`);
   };
 
   const handleSavePlan = async () => {
@@ -395,10 +395,13 @@ export default function AdminDashboard() {
 
     try {
       const bgImg = await loadImage('/favicon.png');
-      const gState = new (doc as any).GState({opacity: 0.08});
+      const gState = new (doc as any).GState({opacity: 0.05});
       doc.setGState(gState);
       // Dibujar marca de agua centrada
-      doc.addImage(bgImg, 'PNG', 45, 80, 120, 120);
+      const wmSize = 160;
+      const wmX = (210 - wmSize) / 2;
+      const wmY = (297 - wmSize) / 2;
+      doc.addImage(bgImg, 'PNG', wmX, wmY, wmSize, wmSize);
       // Restaurar opacidad
       doc.setGState(new (doc as any).GState({opacity: 1.0}));
     } catch (e) {
@@ -411,7 +414,7 @@ export default function AdminDashboard() {
     
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
-    doc.text('COMPROBANTE DE PAGO', 105, 30, { align: 'center' });
+    doc.text('RECIBO DE PAGO', 105, 30, { align: 'center' });
 
     doc.setFontSize(12);
     doc.text(`Fecha: ${new Date().toLocaleDateString('es-AR')} ${new Date().toLocaleTimeString('es-AR')}`, 14, 45);
@@ -461,9 +464,13 @@ export default function AdminDashboard() {
     doc.text('---------------------------------------------------------', 105, finalY + 20, { align: 'center' });
     doc.text('Sello Institucional - Koach Gym', 105, finalY + 26, { align: 'center' });
 
-    try {
+     try {
       const logo = await loadImage('/logo_dark.png');
-      doc.addImage(logo, 'PNG', 85, finalY + 35, 40, 40);
+      const logoAspect = logo.width / logo.height;
+      const logoW = 55;
+      const logoH = logoW / logoAspect;
+      const logoX = (210 - logoW) / 2;
+      doc.addImage(logo, 'PNG', logoX, finalY + 32, logoW, logoH);
     } catch (e) {
       console.warn('No se pudo cargar el logo final', e);
     }
